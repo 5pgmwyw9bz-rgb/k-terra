@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>K-TERRA | Immobilier, Terrains & Construction Certifiés</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+    .card-shadow { box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08); }
+    .blur-text { filter: blur(5px); user-select: none; }
+    .borne-pin {
+      background: #ef4444; color: #fff; border: 2px solid #fff; border-radius: 50%;
+      font-weight: 800; font-size: 10px; display: flex; align-items: center; justify-content: center;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- ===================================================================== -->
+  <!-- CÔTÉ 1 : LE SITE PUBLIC DES CLIENTS (STYLE AIRBNB & SHOPIFY SIMPLE)   -->
+  <!-- ===================================================================== -->
+  <div id="clientWorld" class="flex-1 flex flex-col">
+
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+      <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
+        <div onclick="showSection('home')" class="flex items-center space-x-2.5 cursor-pointer">
+          <div id="brandIcon" class="w-10 h-10 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center font-extrabold text-xl">K</div>
+          <div>
+            <span id="brandTitle" class="text-xl font-extrabold tracking-tight text-slate-900">K-TERRA</span>
+            <span class="block text-[11px] text-emerald-600 font-semibold">🛡️ Maisons & Terrains 100% Vérifiés</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <select id="currencySelect" onchange="changeCurrency()" class="bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800">
+            <option value="XOF">FCFA (XOF)</option>
+            <option value="EUR">Euro (€)</option>
+            <option value="USD">Dollar ($)</option>
+            <option value="CAD">Dollar CA ($CA)</option>
+            <option value="GNF">Franc Guinéen (GNF)</option>
+          </select>
+
+          <button onclick="showSection('vendor')" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold">
+            + Créer ma boutique (1 mois gratuit)
+          </button>
+
+          <!-- Bouton secret pour Morata -->
+          <button onclick="openOwnerPin()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs" title="Direction">
+            <i class="fa-solid fa-lock"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ACCUEIL CLIENTS (STYLE AIRBNB) -->
+    <main id="section-home" class="max-w-6xl w-full mx-auto px-4 py-6 space-y-6">
+      <div class="bg-white rounded-3xl p-6 card-shadow border border-slate-100 text-center space-y-4">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">
+          Visitez en 3D et vérifiez le terrain par satellite avant d'acheter.
+        </h1>
+        <div class="max-w-xl mx-auto flex gap-2">
+          <input id="searchInput" oninput="renderProperties()" type="text" placeholder="Rechercher une ville, un quartier, un pays (ex: Cocody, Dakar, Conakry, Paris...)" class="flex-1 bg-slate-50 border border-slate-300 rounded-2xl px-4 py-3 text-sm">
+          <button onclick="renderProperties()" class="px-5 py-3 rounded-2xl bg-emerald-600 text-white font-bold text-sm">Chercher</button>
+        </div>
+        <div class="flex flex-wrap justify-center gap-2 pt-1">
+          <button onclick="setCategory('all')" id="cat-all" class="px-4 py-2 rounded-full bg-slate-900 text-white text-xs font-bold">Tout voir</button>
+          <button onclick="setCategory('villa')" id="cat-villa" class="px-4 py-2 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">🏠 Villas & Maisons</button>
+          <button onclick="setCategory('terrain')" id="cat-terrain" class="px-4 py-2 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">🛰️ Terrains Cadrés GPS</button>
+          <button onclick="setCategory('appartement')" id="cat-appartement" class="px-4 py-2 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">🏢 Appartements & Étages</button>
+        </div>
+      </div>
+
+      <div id="propertiesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </main>
+
+    <!-- ESPACE AGENCE (STYLE SHOPIFY) -->
+    <section id="section-vendor" class="hidden max-w-5xl w-full mx-auto px-4 py-6 space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <span class="text-xs font-bold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">🎁 1er Mois d'Essai Gratuit</span>
+          <h2 class="text-2xl font-extrabold text-slate-900 mt-2">Créer ma Boutique Immobilière</h2>
+        </div>
+        <button onclick="showSection('home')" class="px-4 py-2 rounded-xl bg-slate-200 text-slate-800 text-xs font-bold">⬅️ Retour</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-2xl p-5 card-shadow border border-slate-200 space-y-3">
+          <h3 class="font-extrabold text-sm">1. Couleurs de mon entreprise</h3>
+          <input id="vendorNameInput" type="text" placeholder="Nom de votre agence..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs">
+          <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+            <button onclick="setVendorBrand('#0f172a')" class="p-2.5 rounded-xl bg-slate-900 text-white">👑 Noir & Or</button>
+            <button onclick="setVendorBrand('#1e3a8a')" class="p-2.5 rounded-xl bg-blue-900 text-white">🛡️ Bleu Royal</button>
+            <button onclick="setVendorBrand('#065f46')" class="p-2.5 rounded-xl bg-emerald-800 text-white">🌍 Vert Foncier</button>
+            <button onclick="setVendorBrand('#9a3412')" class="p-2.5 rounded-xl bg-orange-800 text-white">🏗️ Orange BTP</button>
+          </div>
+          <label class="block text-[11px] font-bold text-slate-600 pt-2">🪪 CNI + Registre (Obligatoire) :</label>
+          <input type="file" class="text-xs w-full" onchange="alert('✅ Documents vérifiés par l\'IA K-TERRA.')">
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 card-shadow border border-slate-200 space-y-2.5">
+          <h3 class="font-extrabold text-sm">2. Publier un bien</h3>
+          <select id="vType" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 text-xs font-semibold">
+            <option value="villa">🏠 Villa Duplex / Maison Basse</option>
+            <option value="terrain">🛰️ Terrain (4 Bornes GPS)</option>
+            <option value="appartement">🏢 Appartement / Étage</option>
+          </select>
+          <input id="vTitle" type="text" placeholder="Titre (ex: Villa Duplex Cocody)" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 text-xs">
+          <input id="vLocation" type="text" placeholder="Ville & Quartier" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 text-xs">
+          <input id="vPrice" type="number" placeholder="Prix en FCFA (ex: 55000000)" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 text-xs">
+          <input id="vDetails" type="text" placeholder="Détails (ex: 500 m², 3e étage, Meublé, ACD)" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2 text-xs">
+          <button onclick="addNewProperty()" class="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs">🚀 Publier maintenant</button>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 card-shadow border border-slate-200 space-y-3">
+          <h3 class="font-extrabold text-sm">3. Clients prêts à acheter 🔥</h3>
+          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+            <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Budget 65 000 000 FCFA Validé ✅</span>
+            <p class="text-xs font-bold">Villa Duplex Cocody (Paiement Comptant)</p>
+            <div class="p-2 rounded-xl bg-white border border-slate-200 flex items-center justify-between">
+              <span id="secretBuyerPhone" class="text-xs font-extrabold blur-text">+33 6 48 92 14 77 (M. Kouassi)</span>
+              <span id="secretBuyerBadge" class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded">🔒 Flouté</span>
+            </div>
+            <button onclick="openPayModal()" class="w-full py-2.5 rounded-xl bg-slate-900 text-amber-400 font-bold text-xs">
+              🔓 Débloquer ce numéro (25 000 FCFA)
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- FENÊTRE DE VISITE D'UNE MAISON (PHOTO + SATELLITE + 3D) -->
+  <div id="propertyModal" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white max-w-4xl w-full rounded-3xl overflow-hidden card-shadow my-auto">
+      <div class="p-4 sm:p-5 border-b border-slate-200 flex items-start justify-between">
+        <div>
+          <span id="modalLegal" class="text-xs font-bold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full"></span>
+          <h2 id="modalTitle" class="text-xl font-extrabold text-slate-900 mt-1.5"></h2>
+          <p id="modalLocation" class="text-xs text-slate-500"></p>
+        </div>
+        <button onclick="closePropertyModal()" class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="px-5 pt-3 flex flex-wrap gap-2">
+        <button onclick="switchModalView('photo')" id="mBtn-photo" class="px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold">📸 1. Photo & Détails</button>
+        <button onclick="switchModalView('satellite')" id="mBtn-satellite" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-800 text-xs font-bold">🛰️ 2. Terrain Satellite (4 Bornes)</button>
+        <button onclick="switchModalView('3d')" id="mBtn-3d" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-800 text-xs font-bold">🏠 3. Visite 3D (Toit & Intérieur)</button>
+      </div>
+
+      <div class="p-5 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        <div class="lg:col-span-7">
+          <div id="mView-photo" class="space-y-2">
+            <img id="modalImg" src="" class="w-full h-64 object-cover rounded-2xl">
+            <p id="modalDetailsText" class="text-xs font-bold text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-200"></p>
+          </div>
+          <div id="mView-satellite" class="hidden space-y-2">
+            <div id="clientSatMap" class="w-full h-64 rounded-2xl border-2 border-emerald-500 overflow-hidden"></div>
+            <p class="text-xs text-emerald-800 bg-emerald-50 p-2 rounded-xl">🛰️ Les 4 bornes rouges (B1, B2, B3, B4) encadrent la propriété exacte sur le satellite.</p>
+          </div>
+          <div id="mView-3d" class="hidden">
+            <div class="relative bg-slate-900 rounded-2xl h-64 overflow-hidden">
+              <canvas id="simple3DCanvas" width="500" height="256" class="w-full h-full cursor-grab"></canvas>
+              <button onclick="toggleSimpleRoof()" class="absolute top-3 left-3 px-3 py-1.5 rounded-xl bg-white text-slate-900 text-xs font-extrabold">🏠 Enlever / Remettre le Toit</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5 bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
+          <div id="modalPrice" class="text-2xl font-extrabold text-slate-900"></div>
+          <div id="simpleChatHistory" class="h-32 overflow-y-auto bg-white rounded-xl p-2.5 border border-slate-200 text-xs space-y-2">
+            <div class="bg-slate-100 p-2 rounded-lg">🤖 <strong>IA K-TERRA :</strong> Papiers et 4 bornes GPS vérifiés. Que voulez-vous savoir ?</div>
+          </div>
+          <div class="grid grid-cols-2 gap-1.5 text-[11px] font-bold">
+            <button onclick="clientAskAI('papers')" class="p-2 rounded-xl bg-white border border-slate-300">📄 Papiers ACD/Titre</button>
+            <button onclick="clientAskAI('payment')" class="p-2 rounded-xl bg-white border border-slate-300">💳 Échéancier</button>
+          </div>
+          <button onclick="clientAskAI('buy')" class="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-extrabold text-xs">✅ Je veux acheter — Contacter le vendeur</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- CÔTÉ 2 : L'IA GÉRANTE DE MORATA (COMME UNE DISCUSSION WHATSAPP !)     -->
+  <!-- ===================================================================== -->
+  <div id="ownerWorld" class="hidden min-h-screen bg-slate-950 text-white p-3 sm:p-6 flex flex-col">
+    <div class="max-w-2xl w-full mx-auto flex-1 flex flex-col bg-slate-900 rounded-3xl border border-emerald-500/40 overflow-hidden shadow-2xl">
+      
+      <!-- En-tête WhatsApp IA Gérante -->
+      <div class="bg-emerald-900/90 p-4 flex items-center justify-between border-b border-emerald-700">
+        <div class="flex items-center space-x-3">
+          <div class="w-11 h-11 rounded-full bg-amber-400 text-black flex items-center justify-center font-extrabold text-lg">🤖</div>
+          <div>
+            <h2 class="font-extrabold text-sm sm:text-base text-white">IA Gérante K-TERRA (Directeur Automatique)</h2>
+            <p class="text-[11px] text-emerald-300">🟢 En ligne 24h/24 • Gère tout le site automatiquement pour Morata</p>
+          </div>
+        </div>
+        <button onclick="exitOwnerWorld()" class="px-3 py-1.5 rounded-xl bg-white text-slate-900 font-extrabold text-xs">
+          Quitter
+        </button>
+      </div>
+
+      <!-- Messages de la discussion avec ton IA -->
+      <div id="aiManagerChat" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs sm:text-sm max-h-[60vh]">
+        <div class="bg-slate-800 border border-slate-700 p-3.5 rounded-2xl text-slate-100 space-y-1.5">
+          <p class="font-bold text-amber-400">👋 Bonjour Patron Morata !</p>
+          <p>Je m'occupe de toute la plateforme automatiquement :</p>
+          <p>💰 <strong>Argent encaissé ce mois :</strong> 2 450 000 FCFA</p>
+          <p>🏢 <strong>Agences actives :</strong> Ivoire Prestige (Payé 🟢), Teranga Dakar (Payé 🟢)</p>
+          <p>🔴 <strong>Agence bloquée automatiquement (Impayé) :</strong> Conakry BTP</p>
+          <p class="text-emerald-400 pt-1">👉 Cliquez sur un bouton en bas ou écrivez-moi en français ce que vous voulez faire !</p>
+        </div>
+      </div>
+
+      <!-- 4 Gros Boutons Simples (1 clic = l'IA exécute) -->
+      <div class="p-3 bg-slate-950 border-t border-slate-800 space-y-2">
+        <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+          <button onclick="askManagerAI('argent')" class="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-left">
+            💰 1. Voir mon argent & mes comptes
+          </button>
+          <button onclick="askManagerAI('agences')" class="p-2.5 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 text-left">
+            🟢/🔴 2. Bloquer ou Activer une agence
+          </button>
+          <button onclick="askManagerAI('numeros')" class="p-2.5 rounded-xl bg-sky-500/20 border border-sky-500/40 text-sky-300 text-left">
+            📱 3. Mettre mes numéros Wave/OM/BNI
+          </button>
+          <button onclick="askManagerAI('securite')" class="p-2.5 rounded-xl bg-purple-500/20 border border-purple-500/40 text-purple-300 text-left">
+            🛡️ 4. Bilan Sécurité & Anti-Escrocs
+          </button>
+        </div>
+
+        <!-- Barre pour écrire en français comme sur WhatsApp -->
+        <div class="flex gap-2 pt-1">
+          <input id="managerInput" type="text" placeholder="Écrivez un ordre en français à votre IA (ex: Bloque Conakry BTP)..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white" onkeypress="if(event.key==='Enter') sendOrderToAI()">
+          <button onclick="sendOrderToAI()" class="px-4 py-2.5 rounded-xl bg-emerald-500 text-black font-extrabold text-xs">Envoyer</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FENÊTRE MOT DE PASSE POUR ENTRER DANS L'IA DE MORATA -->
+  <div id="loginModal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white max-w-sm w-full rounded-3xl p-6 text-center space-y-4">
+      <h3 class="text-lg font-extrabold text-slate-900">🔒 Accès Patron (Morata)</h3>
+      <p class="text-xs text-slate-500">Tapez <strong>MORATA</strong> pour parler à votre IA Gérante :</p>
+      <input id="pinInput" type="password" placeholder="Tapez MORATA" class="w-full bg-slate-100 border border-slate-300 rounded-xl p-3 text-center font-bold text-sm" onkeypress="if(event.key==='Enter') checkOwnerPin()">
+      <div class="flex gap-2">
+        <button onclick="closeOwnerPin()" class="flex-1 py-2.5 rounded-xl bg-slate-200 text-xs font-bold">Annuler</button>
+        <button onclick="checkOwnerPin()" class="flex-1 py-2.5 rounded-xl bg-slate-900 text-amber-400 text-xs font-bold">Ouvrir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FENÊTRE PAIEMENT CLIENT -->
+  <div id="payModal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white max-w-md w-full rounded-3xl p-6 space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-extrabold text-base">Paiement Automatique K-TERRA</h3>
+        <button onclick="closePayModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="payNumbersDisplay" class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1.5 text-slate-700"></div>
+      <input id="txInput" type="text" placeholder="Référence du paiement Wave / OM / MTN / Visa..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs">
+      <button onclick="validatePayment()" class="w-full py-3 rounded-xl bg-emerald-600 text-white font-extrabold text-xs">✅ Valider & Débloquer le numéro</button>
+    </div>
+  </div>
+
+  <script>
+    const items = [
+      {
+        id: 1, cat: 'villa', title: 'Villa Duplex Moderne 5 Pièces + Piscine',
+        location: 'Abidjan, Cocody Angré 8ème Tranche', priceXOF: 65000000,
+        legal: '🛡️ ACD Vérifié & 4 Bornes GPS', details: 'Duplex RDC + 1er Étage • 450 m² • Meublé ou Non Meublé',
+        lat: 5.3984, lng: -3.9872, img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=900&q=80'
+      },
+      {
+        id: 2, cat: 'terrain', title: 'Terrain Plat 600 m² Encadré sur Satellite',
+        location: 'Bingerville / Route d\'Assinie', priceXOF: 18000000,
+        legal: '🛡️ ACD + Extrait Topographique', details: 'Terrain 600 m² • 4 Bornes GPS certifiées sans double vente',
+        lat: 5.3585, lng: -3.8895, img: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80'
+      },
+      {
+        id: 3, cat: 'appartement', title: 'Appartement Haut Standing — 3ème Étage',
+        location: 'Dakar Almadies / Zone 4 Abidjan', priceXOF: 48000000,
+        legal: '🛡️ Titre Foncier Vérifié', details: 'Immeuble R+5 avec Ascenseur • 3ème Étage • 185 m² Meublé',
+        lat: 14.7456, lng: -17.5134, img: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=900&q=80'
+      }
+    ];
+
+    const agencies = [
+      { id: 1, name: 'Ivoire Prestige Immo', active: true },
+      { id: 2, name: 'Teranga Foncier Dakar', active: true },
+      { id: 3, name: 'Conakry Bâtisseurs BTP', active: false }
+    ];
+
+    const rates = { XOF:{f:1,s:'FCFA'}, EUR:{f:0.001524,s:'€'}, USD:{f:0.00166,s:'$'}, CAD:{f:0.00228,s:'$CA'}, GNF:{f:14.25,s:'GNF'} };
+    let curCurrency = 'XOF', curCat = 'all', activeItem = items[0];
+    let myNumbers = localStorage.getItem('kterra_nums') || 'Wave / Orange Money / MTN / Visa BNI';
+
+    function formatMoney(xof) {
+      const r = rates[curCurrency];
+      return Math.round(xof * r.f).toLocaleString('fr-FR') + ' ' + r.s;
+    }
+
+    function renderProperties() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const grid = document.getElementById('propertiesGrid');
+      const list = items.filter(i => (curCat === 'all' || i.cat === curCat) && (i.title.toLowerCase().includes(q) || i.location.toLowerCase().includes(q)));
+      grid.innerHTML = list.map(it => `
+        <div onclick="openPropertyModal(${it.id})" class="bg-white rounded-3xl overflow-hidden card-shadow border border-slate-100 cursor-pointer hover:-translate-y-1 transition">
+          <div class="relative h-52">
+            <img src="${it.img}" class="w-full h-full object-cover">
+            <span class="absolute top-3 left-3 bg-white/95 text-emerald-700 text-[11px] font-extrabold px-3 py-1 rounded-full">${it.legal}</span>
+            <span class="absolute bottom-3 right-3 bg-slate-900/90 text-amber-400 text-[11px] font-bold px-2.5 py-1 rounded-lg">🛰️ Satellite + 3D</span>
+          </div>
+          <div class="p-5 space-y-2">
+            <h3 class="font-extrabold text-base text-slate-900">${it.title}</h3>
+            <p class="text-xs text-slate-500">📍 ${it.location}</p>
+            <p class="text-xs text-slate-600 bg-slate-50 p-2 rounded-xl">${it.details}</p>
+            <div class="pt-2 flex items-center justify-between">
+              <span class="text-lg font-extrabold text-slate-900">${formatMoney(it.priceXOF)}</span>
+              <span class="text-xs font-bold text-emerald-600">Visiter →</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function setCategory(c) { curCat = c; renderProperties(); }
+    function changeCurrency() { curCurrency = document.getElementById('currencySelect').value; renderProperties(); }
+    function showSection(s) {
+      document.getElementById('section-home').classList.toggle('hidden', s !== 'home');
+      document.getElementById('section-vendor').classList.toggle('hidden', s !== 'vendor');
+    }
+
+    let modalMap = null, modalPoly = null;
+    function openPropertyModal(id) {
+      activeItem = items.find(i => i.id === id) || items[0];
+      document.getElementById('modalLegal').textContent = activeItem.legal;
+      document.getElementById('modalTitle').textContent = activeItem.title;
+      document.getElementById('modalLocation').textContent = activeItem.location;
+      document.getElementById('modalImg').src = activeItem.img;
+      document.getElementById('modalDetailsText').textContent = activeItem.details;
+      document.getElementById('modalPrice').textContent = formatMoney(activeItem.priceXOF);
+      document.getElementById('propertyModal').classList.remove('hidden');
+      document.getElementById('propertyModal').classList.add('flex');
+      switchModalView('photo');
+    }
+    function closePropertyModal() {
+      document.getElementById('propertyModal').classList.add('hidden');
+      document.getElementById('propertyModal').classList.remove('flex');
+    }
+
+    function switchModalView(v) {
+      ['photo', 'satellite', '3d'].forEach(k => document.getElementById('mView-' + k).classList.toggle('hidden', k !== v));
+      if (v === 'satellite') {
+        setTimeout(() => {
+          if (!modalMap) {
+            modalMap = L.map('clientSatMap').setView([activeItem.lat, activeItem.lng], 18);
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 }).addTo(modalMap);
+          }
+          modalMap.invalidateSize();
+          modalMap.setView([activeItem.lat, activeItem.lng], 18);
+          if (modalPoly) modalMap.removeLayer(modalPoly);
+          const d = 0.00014;
+          modalPoly = L.polygon([[activeItem.lat+d, activeItem.lng-d], [activeItem.lat+d, activeItem.lng+d], [activeItem.lat-d, activeItem.lng+d], [activeItem.lat-d, activeItem.lng-d]], { color: '#fbbf24', weight: 3, fillColor: '#10b981', fillOpacity: 0.35 }).addTo(modalMap);
+        }, 150);
+      }
+      if (v === '3d') drawSimple3D();
+    }
+
+    const c3d = document.getElementById('simple3DCanvas'), ctx3d = c3d.getContext('2d');
+    let rotY = 0.6, roofOn = true, drag3D = false, lastX = 0;
+    function proj(x, y, z) {
+      const cy = Math.cos(rotY), sy = Math.sin(rotY), x1 = x*cy - z*sy, z1 = z*cy + x*sy, s = 240/(240 + z1 + 50);
+      return { x: c3d.width/2 + x1*s, y: c3d.height/2 + (y*0.9 - z1*0.35)*s };
+    }
+    function poly(pts, fill, str) {
+      ctx3d.beginPath(); ctx3d.moveTo(pts[0].x, pts[0].y); pts.slice(1).forEach(p => ctx3d.lineTo(p.x, p.y));
+      ctx3d.closePath(); ctx3d.fillStyle = fill; ctx3d.fill(); ctx3d.strokeStyle = str; ctx3d.lineWidth = 2; ctx3d.stroke();
+    }
+    function drawSimple3D() {
+      ctx3d.clearRect(0, 0, c3d.width, c3d.height);
+      poly([proj(-100,45,-80), proj(100,45,-80), proj(100,45,80), proj(-100,45,80)], 'rgba(16,185,129,0.2)', '#10b981');
+      const b = [proj(-60,45,-45), proj(40,45,-45), proj(40,45,45), proj(-60,45,45)];
+      const t = [proj(-60,-20,-45), proj(40,-20,-45), proj(40,-20,45), proj(-60,-20,45)];
+      poly([b[0],b[1],t[1],t[0]], '#334155', '#fbbf24'); poly([b[1],b[2],t[2],t[1]], '#475569', '#fbbf24');
+      poly([b[2],b[3],t[3],t[2]], '#334155', '#fbbf24'); poly([b[3],b[0],t[0],t[3]], '#1e293b', '#fbbf24');
+      if (roofOn) {
+        const a1 = proj(-10,-55,-15), a2 = proj(-10,-55,15);
+        poly([t[0],t[1],a1], '#d97706', '#fde047'); poly([t[1],t[2],a2,a1], '#b45309', '#fde047');
+      }
+    }
+    c3d.addEventListener('pointerdown', e => { drag3D = true; lastX = e.clientX; });
+    window.addEventListener('pointerup', () => drag3D = false);
+    window.addEventListener('pointermove', e => { if (drag3D) { rotY += (e.clientX - lastX)*0.012; lastX = e.clientX; drawSimple3D(); } });
+    function toggleSimpleRoof() { roofOn = !roofOn; drawSimple3D(); }
+
+    function clientAskAI(type) {
+      const box = document.getElementById('simpleChatHistory');
+      const msg = type === 'papers' ? `✅ Papiers (${activeItem.legal}) et bornes GPS certifiés.`
+        : type === 'payment' ? `💳 Prix : ${formatMoney(activeItem.priceXOF)} payable devant Notaire.`
+        : `🔥 Parfait ! Vos coordonnées sont transmises au propriétaire.`;
+      box.innerHTML += `<div class="bg-emerald-50 border border-emerald-200 p-2 rounded-lg text-emerald-900">${msg}</div>`;
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function setVendorBrand(color) {
+      const name = document.getElementById('vendorNameInput').value.trim() || 'Ma Boutique Immo';
+      document.getElementById('brandTitle').textContent = name.toUpperCase();
+      document.getElementById('brandIcon').style.backgroundColor = color;
+      alert(`✨ Boutique personnalisée au nom de "${name}" !`);
+    }
+
+    function addNewProperty() {
+      const title = document.getElementById('vTitle').value.trim() || 'Nouveau Bien Certifié';
+      const loc = document.getElementById('vLocation').value.trim() || 'Abidjan, Cocody';
+      const price = parseInt(document.getElementById('vPrice').value, 10) || 45000000;
+      const details = document.getElementById('vDetails').value.trim() || 'Vérifié par Satellite & 3D';
+      if (/(\+?\d[\d\s.-]{7,}\d)/g.test(title + ' ' + details)) {
+        alert('🛡️ Numéro caché bloqué par l\'IA K-TERRA.'); return;
+      }
+      items.unshift({ id: Date.now(), cat: document.getElementById('vType').value, title, location: loc, priceXOF: price, legal: '🛡️ Certifié K-TERRA', details, lat: 5.3984, lng: -3.9872, img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80' });
+      renderProperties(); showSection('home');
+    }
+
+    // IA GÉRANTE DE MORATA (DISCUSSION WHATSAPP)
+    function openOwnerPin() { document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('loginModal').classList.add('flex'); }
+    function closeOwnerPin() { document.getElementById('loginModal').classList.add('hidden'); document.getElementById('loginModal').classList.remove('flex'); }
+    function checkOwnerPin() {
+      if (document.getElementById('pinInput').value.trim().toUpperCase() === 'MORATA') {
+        closeOwnerPin();
+        document.getElementById('clientWorld').classList.add('hidden');
+        document.getElementById('ownerWorld').classList.remove('hidden');
+      } else alert('Tapez MORATA');
+    }
+    function exitOwnerWorld() {
+      document.getElementById('ownerWorld').classList.add('hidden');
+      document.getElementById('clientWorld').classList.remove('hidden');
+    }
+
+    function askManagerAI(topic) {
+      const chat = document.getElementById('aiManagerChat');
+      if (topic === 'argent') {
+        chat.innerHTML += `<div class="bg-slate-800 border border-emerald-500/40 p-3.5 rounded-2xl">🤖 <strong>IA Gérante :</strong> Patron Morata, votre solde d'abonnements ce mois est de <strong>2 450 000 FCFA</strong>. Vos comptes enregistrés sont : <em>${myNumbers}</em>.</div>`;
+      } else if (topic === 'agences') {
+        const htmlList = agencies.map(a => `
+          <div class="flex items-center justify-between bg-slate-900 p-2 rounded-xl mt-1.5">
+            <span>${a.name}</span>
+            <button onclick="toggleAgencyAI(${a.id})" class="px-3 py-1 rounded-lg font-bold text-xs ${a.active ? 'bg-emerald-500 text-black' : 'bg-red-600 text-white'}">
+              ${a.active ? 'ACTIF 🟢 (Cliquer pour Bloquer)' : 'BLOQUÉ 🔴 (Cliquer pour Activer)'}
+            </button>
+          </div>
+        `).join('');
+        chat.innerHTML += `<div class="bg-slate-800 border border-amber-500/40 p-3.5 rounded-2xl">🤖 <strong>IA Gérante :</strong> Voici vos agences. Cliquez pour couper ou rallumer : ${htmlList}</div>`;
+      } else if (topic === 'numeros') {
+        const n = prompt('Écrivez vos numéros Wave / Orange Money / MTN / BNI :', myNumbers);
+        if (n) { myNumbers = n; localStorage.setItem('kterra_nums', n); }
+        chat.innerHTML += `<div class="bg-slate-800 border border-sky-500/40 p-3.5 rounded-2xl">🤖 <strong>IA Gérante :</strong> C'est fait Patron ! J'ai enregistré vos coordonnées de paiement : <strong>${myNumbers}</strong>.</div>`;
+      } else if (topic === 'securite') {
+        chat.innerHTML += `<div class="bg-slate-800 border border-purple-500/40 p-3.5 rounded-2xl">🤖 <strong>IA Gérante :</strong> Tout est blindé à 100 %. J'ai bloqué 3 tentatives de numéros cachés aujourd'hui et vérifié les 4 bornes GPS sur le satellite. Zéro faille détectée.</div>`;
+      }
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function toggleAgencyAI(id) {
+      const a = agencies.find(x => x.id === id);
+      if (a) { a.active = !a.active; askManagerAI('agences'); }
+    }
+
+    function sendOrderToAI() {
+      const inp = document.getElementById('managerInput');
+      const txt = inp.value.trim();
+      if (!txt) return;
+      const chat = document.getElementById('aiManagerChat');
+      chat.innerHTML += `<div class="bg-emerald-600 text-white p-3 rounded-2xl ml-auto max-w-[80%]">👑 <strong>Morata :</strong> ${txt}</div>`;
+      inp.value = '';
+      setTimeout(() => {
+        chat.innerHTML += `<div class="bg-slate-800 border border-slate-700 p-3 rounded-2xl">🤖 <strong>IA Gérante :</strong> Ordre reçu Patron (« ${txt} »). Je viens de l'exécuter automatiquement sur toute la plateforme K-TERRA !</div>`;
+        chat.scrollTop = chat.scrollHeight;
+      }, 300);
+    }
+
+    function openPayModal() {
+      document.getElementById('payNumbersDisplay').innerHTML = `<strong>Coordonnées de paiement K-TERRA :</strong><br>${myNumbers}`;
+      document.getElementById('payModal').classList.remove('hidden');
+      document.getElementById('payModal').classList.add('flex');
+    }
+    function closePayModal() { document.getElementById('payModal').classList.add('hidden'); document.getElementById('payModal').classList.remove('flex'); }
+    function validatePayment() {
+      if (!document.getElementById('txInput').value.trim()) { alert('Entrez la référence de paiement.'); return; }
+      document.getElementById('secretBuyerPhone').classList.remove('blur-text');
+      document.getElementById('secretBuyerBadge').textContent = '🔓 Débloqué';
+      closePayModal();
+      alert('✅ Paiement validé ! Numéro débloqué.');
+    }
+
+    renderProperties();
+  </script>
+</body>
+</html>
