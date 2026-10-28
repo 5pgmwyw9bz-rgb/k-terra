@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#064e3b">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="K-TERRA">
-  <title>K-TERRA | Résidences Meublées, Terrains Cadrés GPS & Villas Vérifiées</title>
+  <!-- VERSION 5.0 PRO — ARCHITECTURE 4 UNIVERS DISTINCTS K-TERRA -->
+  <title>K-TERRA V5 | Résidences, Cadastre Terrains & Villas 3D</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -14,80 +12,61 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #f8fafc;
-      color: #0f172a;
-      padding-bottom: 80px;
-    }
-    .k-shadow { box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08); }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #ffffff; color: #0f172a; padding-bottom: 86px; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .gold-badge { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #000; }
-    .emerald-header { background: linear-gradient(135deg, #064e3b 0%, #047857 100%); }
+    .airbnb-card { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06); }
+    .cadastre-card { background: #0f172a; color: #f8fafc; border: 1px solid #334155; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
   <!-- ===================================================================== -->
-  <!-- PLATEFORME PUBLIQUE (ZÉRO BOUTON ADMIN VISIBLE POUR LE PUBLIC)        -->
+  <!-- INTERFACE PUBLIQUE (ZÉRO BOUTON PATRON VISIBLE POUR LES VISITEURS)    -->
   <!-- ===================================================================== -->
-  <div id="clientWorld" class="flex-1 flex flex-col">
+  <div id="publicApp" class="flex-1 flex flex-col">
 
-    <!-- BANDEAU HAUT -->
-    <div class="bg-slate-900 text-white text-[11px] py-2 px-4">
-      <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-        <div class="flex items-center gap-2">
-          <span class="px-2 py-0.5 rounded-full gold-badge font-extrabold text-[10px]">K-TERRA OFFICIEL</span>
-          <span class="text-slate-200 font-semibold">1. Résidences Meublées • 2. Terrains Cadrés GPS • 3. Villas 3D</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <button onclick="shareAppOnWhatsApp()" class="px-2.5 py-1 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center gap-1">
-            <i class="fa-brands fa-whatsapp"></i><span>Partager</span>
-          </button>
-          <button onclick="openInstallModal()" class="px-2.5 py-1 rounded-full bg-amber-400 hover:bg-amber-300 text-black font-extrabold flex items-center gap-1">
-            <i class="fa-solid fa-mobile-screen-button"></i><span>📲 Installer l'App</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- EN-TÊTE PRINCIPAL -->
+    <!-- BARRE SUPÉRIEURE : SÉLECTEUR DES 4 ESPACES CLAIREMENT SÉPARÉS -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
       <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
         
-        <!-- LOGO K-TERRA (Passage secret : 5 clics rapides) -->
-        <div onclick="handleLogoTap()" class="flex items-center space-x-3 cursor-pointer select-none">
-          <div class="w-11 h-11 rounded-2xl emerald-header flex items-center justify-center shadow-lg border border-amber-400/50">
+        <!-- Logo K-TERRA V5 (5 clics rapides = Accès secret Morata) -->
+        <div onclick="secretLogoTap()" class="flex items-center space-x-2.5 cursor-pointer select-none">
+          <div class="w-11 h-11 rounded-2xl bg-slate-950 text-amber-400 flex items-center justify-center shadow-md border border-amber-400/40">
             <svg class="w-7 h-7" viewBox="0 0 64 64" fill="none">
-              <path d="M32 4L56 18V46L32 60L8 46V18L32 4Z" stroke="#FBBF24" stroke-width="3.5" fill="rgba(6,78,59,0.6)"/>
-              <path d="M18 34L32 20L46 34" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M23 32V46H41V32" stroke="#FBBF24" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="32" cy="14" r="3" fill="#FBBF24"/>
+              <path d="M32 4L56 18V46L32 60L8 46V18L32 4Z" stroke="#FBBF24" stroke-width="4" fill="#064E3B"/>
+              <path d="M18 35L32 21L46 35" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+              <path d="M24 33V46H40V33" stroke="#FBBF24" stroke-width="3.5"/>
             </svg>
           </div>
           <div>
             <div class="flex items-center gap-1.5">
-              <span id="brandTitle" class="text-xl font-extrabold tracking-tight text-slate-900">K-TERRA</span>
-              <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">CERTIFIÉ</span>
+              <span class="text-xl font-extrabold tracking-tight text-slate-950">K-TERRA</span>
+              <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-rose-600 text-white">V5 PRO</span>
             </div>
-            <span class="block text-[11px] text-slate-500 font-semibold">Résidences • Terrains GPS • Villas 3D</span>
+            <span id="activeUniverseLabel" class="block text-[11px] font-bold text-rose-600">Univers 1 : Résidences Meublées</span>
           </div>
         </div>
 
-        <!-- DEUX GRANDS BOUTONS : ESPACE CLIENT vs ESPACE VENDEUR & ABONNEMENT -->
-        <div class="flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200">
-          <button onclick="showSection('home')" id="topRoleClient" class="px-4 py-2 rounded-xl bg-emerald-700 text-white text-xs font-extrabold transition shadow-sm">
-            🔍 Espace Client (Visiter & Réserver)
+        <!-- LES 4 BOUTONS D'UNIVERS (CHAQUE BOUTON CHANGE TOUT L'ÉCRAN) -->
+        <div class="flex flex-wrap items-center bg-slate-100 p-1.5 rounded-2xl border border-slate-200 gap-1">
+          <button onclick="switchUniverse('residence')" id="uTab-residence" class="px-3.5 py-2 rounded-xl bg-rose-600 text-white text-xs font-extrabold transition shadow">
+            🔑 1. Résidences (Par Nuit)
           </button>
-          <button onclick="showSection('vendor')" id="topRoleVendor" class="px-4 py-2 rounded-xl text-slate-700 hover:text-slate-900 text-xs font-extrabold transition">
-            🏪 Espace Vendeur (Créer ma Page & Abonnement)
+          <button onclick="switchUniverse('terrain')" id="uTab-terrain" class="px-3.5 py-2 rounded-xl text-slate-700 hover:bg-white text-xs font-extrabold transition">
+            🛰️ 2. Terrains (En m² & ACD)
+          </button>
+          <button onclick="switchUniverse('maison')" id="uTab-maison" class="px-3.5 py-2 rounded-xl text-slate-700 hover:bg-white text-xs font-extrabold transition">
+            🏛️ 3. Villas & Maisons (Vente)
+          </button>
+          <button onclick="switchUniverse('studio')" id="uTab-studio" class="px-3.5 py-2 rounded-xl bg-amber-400 text-black text-xs font-extrabold transition">
+            🏪 4. Créer ma Page Vendeur
           </button>
         </div>
 
-        <!-- PAYS & DEVISES -->
+        <!-- Pays, Monnaie & Installation -->
         <div class="flex items-center gap-2">
-          <select id="countrySelect" onchange="changeCountry()" class="bg-slate-100 border border-slate-300 rounded-full px-3 py-2 text-xs font-extrabold text-slate-900">
+          <select id="countrySelect" onchange="changeCountry()" class="bg-slate-100 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-extrabold text-slate-900">
             <option value="CI">🇨🇮 Côte d'Ivoire</option>
             <option value="SN">🇸🇳 Sénégal</option>
             <option value="GN">🇬🇳 Guinée</option>
@@ -98,182 +77,212 @@
             <option value="CM">🇨🇲 Cameroun</option>
             <option value="GA">🇬🇦 Gabon</option>
             <option value="CD">🇨🇩 RD Congo</option>
-            <option value="GH">🇬🇭 Ghana / Nigeria</option>
-            <option value="MA">🇲🇦 Maroc / Rwanda</option>
           </select>
 
-          <select id="currencySelect" onchange="changeCurrency()" class="bg-slate-100 border border-slate-300 rounded-full px-3 py-2 text-xs font-extrabold text-emerald-800">
+          <select id="currencySelect" onchange="changeCurrency()" class="bg-slate-100 border border-slate-300 rounded-xl px-2.5 py-2 text-xs font-extrabold text-slate-900">
             <option value="XOF">FCFA</option>
             <option value="EUR">€ EUR</option>
             <option value="USD">$ USD</option>
           </select>
+
+          <button onclick="shareAppWhatsApp()" class="px-3 py-2 rounded-xl bg-emerald-600 text-white text-xs font-extrabold flex items-center gap-1">
+            <i class="fa-brands fa-whatsapp"></i><span class="hidden sm:inline">Partager</span>
+          </button>
         </div>
       </div>
 
-      <!-- LES 3 DOMAINES SÉPARÉS + BARRE DE RECHERCHE -->
-      <div id="clientFiltersHeader" class="max-w-7xl mx-auto px-4 pt-2 pb-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100">
-        <div class="flex flex-wrap gap-1.5">
-          <button onclick="setDomain('residence')" id="domBtn-residence" class="px-4 py-2 rounded-full bg-emerald-700 text-white text-xs font-extrabold shadow-sm">
-            🔑 1. Résidences Meublées (Par Nuit)
-          </button>
-          <button onclick="setDomain('terrain')" id="domBtn-terrain" class="px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-extrabold">
-            🛰️ 2. Achat de Terrains (En m² & ACD)
-          </button>
-          <button onclick="setDomain('maison')" id="domBtn-maison" class="px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-extrabold">
-            🏡 3. Achat de Maisons & Villas (Visite 3D)
-          </button>
+      <!-- BARRE DE RECHERCHE + COMMUNES (Taper MORATA2026 ouvre l'espace secret) -->
+      <div id="publicSearchAndCommunes" class="border-t border-slate-100 bg-slate-50/70">
+        <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex-1 min-w-[240px] flex items-center bg-white border border-slate-300 rounded-full px-4 py-2 shadow-sm">
+            <i class="fa-solid fa-magnifying-glass text-rose-600 text-xs mr-2.5"></i>
+            <input id="globalSearchInput" oninput="checkSecretOrFilter()" type="text" placeholder="Rechercher une commune, un quartier, un lotissement (ex: Cocody Angré, Zone 4, Assinie...)" class="w-full text-xs sm:text-sm font-semibold focus:outline-none">
+          </div>
+          <div id="storeFilterBadge" class="hidden items-center gap-2 bg-slate-900 text-white px-3.5 py-1.5 rounded-full text-xs font-bold">
+            <span id="storeFilterName"></span>
+            <button onclick="clearStoreFilter()" class="text-amber-400 underline ml-2">Tout voir</button>
+          </div>
         </div>
-
-        <div class="flex-1 max-w-md flex items-center bg-slate-100 border border-slate-300 rounded-full px-3.5 py-1.5">
-          <i class="fa-solid fa-magnifying-glass text-emerald-700 text-xs mr-2"></i>
-          <input id="searchInput" oninput="handleSearchOrSecret()" type="text" placeholder="Chercher une commune, un quartier (ex: Cocody, Zone 4, Assinie...)" class="w-full bg-transparent text-xs font-semibold focus:outline-none">
-        </div>
+        <div id="communesBar" class="max-w-7xl mx-auto px-4 pb-2.5 flex items-center gap-2 overflow-x-auto no-scrollbar"></div>
       </div>
-
-      <div id="communesBar" class="max-w-7xl mx-auto px-4 py-2 flex items-center gap-2 overflow-x-auto no-scrollbar border-t border-slate-100"></div>
     </header>
 
     <!-- =================================================================== -->
-    <!-- PARTIE 1 : ESPACE CLIENT                                            -->
+    <!-- UNIVERS 1 : K-TERRA RÉSIDENCES (STYLE AIRBNB PUR — PAR NUITÉE)      -->
     <!-- =================================================================== -->
-    <main id="section-home" class="max-w-7xl w-full mx-auto px-4 py-5 space-y-5">
-
-      <div id="domainHeroBanner" class="emerald-header text-white rounded-3xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 shadow-lg">
-        <div class="space-y-1">
-          <span id="domainBadgeText" class="inline-flex items-center gap-1.5 text-[10px] font-extrabold gold-badge px-2.5 py-0.5 rounded-full">
-            🔑 ESPACE 1 : RÉSIDENCES MEUBLÉES PAR COMMUNE
+    <main id="universe-residence" class="max-w-7xl w-full mx-auto px-4 py-6 space-y-6">
+      
+      <!-- Barre Style Airbnb : Choix des Dates + Garantie Pass Échange 30 min -->
+      <div class="bg-gradient-to-r from-rose-600 to-rose-700 text-white rounded-3xl p-5 shadow-lg flex flex-wrap items-center justify-between gap-4">
+        <div class="space-y-1 max-w-xl">
+          <span class="px-2.5 py-0.5 rounded-full bg-white text-rose-700 font-extrabold text-[10px] uppercase">
+            🔑 K-TERRA STAY • Style Airbnb Côte d'Ivoire & Afrique
           </span>
-          <h1 id="domainTitleText" class="text-base sm:text-xl font-extrabold">
-            Réservez votre résidence par nuit • Garantie Pass Échange Gratuit en cas d'imprévu !
+          <h1 class="text-lg sm:text-2xl font-extrabold">
+            Louez votre résidence meublée par commune, sans mauvaise surprise.
           </h1>
-          <p id="domainDescText" class="text-xs text-emerald-100">
-            Bloquez vos clés avec 15% d'avance (Wave/OM). Si la résidence ne correspond pas aux photos à votre arrivée, votre Pass vous reloge immédiatement dans une autre résidence sans repayer !
+          <p class="text-xs text-rose-100">
+            🛡️ <strong>Bouclier Anti-Déception :</strong> Vous bloquez les clés avec 15% d'avance. Si la résidence ne vous plaît pas en arrivant (30 min), votre <strong>Pass Échange K-TERRA</strong> vous reloge immédiatement dans une autre résidence gratuitement !
           </p>
         </div>
-        <button onclick="showSection('vendor')" class="px-4 py-2.5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs shadow">
-          🏪 Publier mes Résidences, Terrains ou Villas →
-        </button>
-      </div>
 
-      <div id="vendorStoreBanner" class="hidden bg-slate-900 text-white p-4 rounded-2xl flex items-center justify-between">
-        <div>
-          <span class="text-[10px] text-amber-400 font-extrabold uppercase">Boutique Officielle Abonnée K-TERRA</span>
-          <h3 id="vendorStoreTitle" class="text-base font-extrabold"></h3>
+        <!-- Vrai Sélecteur de Dates Arrivée / Départ -->
+        <div class="bg-white text-slate-900 p-3 rounded-2xl flex flex-wrap items-center gap-3 text-xs shadow">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 uppercase">Arrivée</label>
+            <input type="date" id="resCheckIn" class="font-extrabold text-slate-900 focus:outline-none">
+          </div>
+          <div class="h-6 w-px bg-slate-200"></div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 uppercase">Départ</label>
+            <input type="date" id="resCheckOut" class="font-extrabold text-slate-900 focus:outline-none">
+          </div>
         </div>
-        <button onclick="resetVendorFilter()" class="px-3 py-1.5 rounded-xl bg-white text-slate-900 text-xs font-extrabold">
-          Voir tout le catalogue
-        </button>
       </div>
 
-      <div id="propertiesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+      <!-- Grille des Résidences (Cartes Airbnb) -->
+      <div id="grid-residence" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
     </main>
 
     <!-- =================================================================== -->
-    <!-- PARTIE 2 : ESPACE VENDEUR (DISTINCTION RÉSIDENCES vs ABONNEMENT MOIS)-->
+    <!-- UNIVERS 2 : K-TERRA FONCIER / TERRAINS (STYLE CADASTRE & GÉOMÈTRE)  -->
     <!-- =================================================================== -->
-    <section id="section-vendor" class="hidden max-w-6xl w-full mx-auto px-4 py-6 space-y-6">
+    <main id="universe-terrain" class="hidden max-w-7xl w-full mx-auto px-4 py-6 space-y-6">
       
-      <!-- Explication claire des 2 formules vendeurs -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-emerald-950 text-white p-5 rounded-3xl border border-emerald-500/40 space-y-2">
-          <span class="text-[10px] font-extrabold gold-badge px-2.5 py-0.5 rounded-full">FORMULE 1 : GÉRANTS DE RÉSIDENCES MEUBLÉES</span>
-          <h3 class="text-lg font-extrabold">Publication Gratuite • Commission à la réservation</h3>
-          <p class="text-xs text-emerald-200">
-            Publiez vos résidences gratuitement dans votre commune. K-TERRA prélève uniquement 15% d'avance auprès du client lors de la réservation et le client vous règle les 85% restants à la remise des clés.
+      <!-- En-tête Noir & Or Spécial Foncier / Lotissements (Zéro Nuitée !) -->
+      <div class="bg-slate-950 text-white rounded-3xl p-6 border-2 border-amber-500/40 shadow-xl space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="space-y-1">
+            <span class="px-3 py-1 rounded-full bg-amber-400 text-black font-extrabold text-[10px] uppercase">
+              🛰️ K-TERRA CADASTRE • Achat de Terrains Certifiés (Zéro Double Vente)
+            </span>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-1">
+              Vérifiez les 4 Bornes GPS, le N° de Lot/Îlot, la Superficie en m² et l'ACD.
+            </h2>
+            <p class="text-xs text-slate-300">
+              Ici, seuls les lotisseurs et propriétaires à jour de leur <strong>abonnement mensuel K-TERRA</strong> peuvent afficher leurs terrains. La demande de visite sur site est <strong>100% gratuite</strong> pour l'acheteur.
+            </p>
+          </div>
+          <button onclick="switchUniverse('studio'); selectStudioRole('terrain');" class="px-4 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs">
+            🛰️ Je vends des terrains → M'abonner (50 000 FCFA/mois)
+          </button>
+        </div>
+      </div>
+
+      <!-- Grille Spéciale Terrains (Fiches techniques cadastrales en m²) -->
+      <div id="grid-terrain" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </main>
+
+    <!-- =================================================================== -->
+    <!-- UNIVERS 3 : K-TERRA VILLAS & MAISONS À VENDRE (STYLE ARCHITECTE 3D) -->
+    <!-- =================================================================== -->
+    <main id="universe-maison" class="hidden max-w-7xl w-full mx-auto px-4 py-6 space-y-6">
+      
+      <div class="bg-blue-950 text-white rounded-3xl p-6 border border-blue-400/30 shadow-xl flex flex-wrap items-center justify-between gap-4">
+        <div class="space-y-1 max-w-2xl">
+          <span class="px-3 py-1 rounded-full bg-sky-400 text-black font-extrabold text-[10px] uppercase">
+            🏛️ K-TERRA IMMO 3D • Vente de Villas, Duplex & Appartements
+          </span>
+          <h2 class="text-xl sm:text-2xl font-extrabold mt-1">
+            Inspectez chaque Villa en 3D (Toit Amovible) et simulez votre achat devant Notaire.
+          </h2>
+          <p class="text-xs text-blue-200">
+            Ventes certifiées au comptant ou par échéancier promoteur (Apport 30%). Les agences immobilières paient un abonnement mensuel pour exposer leurs villas ici.
           </p>
         </div>
+        <button onclick="switchUniverse('studio'); selectStudioRole('maison');" class="px-4 py-3 rounded-2xl bg-sky-400 text-black font-extrabold text-xs">
+          🏛️ Je suis Promoteur / Agence → Publier mes Villas
+        </button>
+      </div>
 
-        <div class="bg-slate-900 text-white p-5 rounded-3xl border border-amber-400/50 space-y-2">
-          <span class="text-[10px] font-extrabold gold-badge px-2.5 py-0.5 rounded-full">FORMULE 2 : VENDEURS DE TERRAINS & MAISONS</span>
-          <h3 class="text-lg font-extrabold text-amber-300">Abonnement par Mois pour être visible en ligne</h3>
-          <p class="text-xs text-slate-300">
-            Pour publier vos Terrains (avec 4 bornes GPS) et vos Maisons/Villas (avec visite 3D) et recevoir les acheteurs en direct sans commission sur la vente : <strong>Abonnement mensuel fixe de 50 000 FCFA / mois</strong>.
-          </p>
-          <button onclick="openVendorSubscriptionModal()" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs">
-            💳 Activer mon Abonnement Mensuel (Wave / OM / MTN / BNI)
-          </button>
+      <!-- Grille Spéciale Maisons & Villas -->
+      <div id="grid-maison" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </main>
+
+    <!-- =================================================================== -->
+    <!-- UNIVERS 4 : STUDIO VENDEUR (CRÉER SA PROPRE PAGE + ABONNEMENT MOIS) -->
+    <!-- =================================================================== -->
+    <main id="universe-studio" class="hidden max-w-6xl w-full mx-auto px-4 py-6 space-y-6">
+
+      <div class="bg-slate-900 text-white p-6 rounded-3xl border border-amber-400/40 space-y-2">
+        <span class="px-3 py-1 rounded-full bg-amber-400 text-black font-extrabold text-[10px]">🏪 STUDIO PARTENAIRE K-TERRA</span>
+        <h2 class="text-xl sm:text-2xl font-extrabold">Créez votre Page Officielle et publiez dans votre domaine</h2>
+        <p class="text-xs text-slate-300">
+          Choisissez votre activité ci-dessous : le formulaire et les conditions s'adaptent automatiquement à votre métier.
+        </p>
+      </div>
+
+      <!-- CHOIX DU MÉTIER DU VENDEUR (2 MODÈLES DE PAIEMENT DIFFÉRENTS) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div onclick="selectStudioRole('residence')" id="roleCard-residence" class="cursor-pointer p-5 rounded-3xl border-2 border-rose-600 bg-rose-50/60 space-y-2 transition">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-extrabold text-rose-700 uppercase">Métier 1 : Résidences</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-extrabold">Inscription 0 FCFA</span>
+          </div>
+          <h3 class="font-extrabold text-base text-slate-900">🔑 Gérant de Résidences Meublées</h3>
+          <p class="text-xs text-slate-600">Vous publiez gratuitement. K-TERRA prélève 15% d'avance au client et le client vous paie 85% à la remise des clés.</p>
+        </div>
+
+        <div onclick="selectStudioRole('terrain')" id="roleCard-terrain" class="cursor-pointer p-5 rounded-3xl border-2 border-slate-200 bg-white space-y-2 transition">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-extrabold text-amber-700 uppercase">Métier 2 : Foncier</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-amber-400 text-black text-[10px] font-extrabold">50 000 FCFA / Mois</span>
+          </div>
+          <h3 class="font-extrabold text-base text-slate-900">🛰️ Lotisseur & Vendeur de Terrains</h3>
+          <p class="text-xs text-slate-600">Vous payez par mois pour que vos terrains (en m² + 4 bornes GPS) soient visibles. 0% de commission sur vos ventes !</p>
+        </div>
+
+        <div onclick="selectStudioRole('maison')" id="roleCard-maison" class="cursor-pointer p-5 rounded-3xl border-2 border-slate-200 bg-white space-y-2 transition">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-extrabold text-blue-700 uppercase">Métier 3 : Immobilier</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-sky-400 text-black text-[10px] font-extrabold">75 000 FCFA / Mois</span>
+          </div>
+          <h3 class="font-extrabold text-base text-slate-900">🏛️ Promoteur & Vendeur de Maisons</h3>
+          <p class="text-xs text-slate-600">Vous payez par mois pour exposer vos Villas en 3D et recevoir les acheteurs directement sur votre WhatsApp.</p>
         </div>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <!-- COLONNE GAUCHE (4 cols) : CRÉER SA PAGE VENDEUR -->
-        <div class="lg:col-span-4 bg-white rounded-3xl p-5 k-shadow border border-slate-200 space-y-4">
-          <div class="flex items-center gap-2">
-            <span class="w-7 h-7 rounded-full bg-emerald-700 text-white font-extrabold flex items-center justify-center text-xs">1</span>
-            <h3 class="font-extrabold text-sm text-slate-900">Créer ma Page Officielle</h3>
-          </div>
-
-          <input id="vendorNameInput" type="text" placeholder="Nom de votre Page (ex: Ivoire Foncier ou Résidences Étoile)" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-bold">
+        <!-- Étape A : Créer sa Page Vendeur et Payer son Mois (si Terrain/Maison) -->
+        <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-slate-200 airbnb-card space-y-4">
+          <h3 class="font-extrabold text-base text-slate-900">1. Identité de ma Page Boutique</h3>
+          <input id="stVendorName" type="text" placeholder="Nom de votre Page (ex: Résidences Étoile ou Ivoire Lotissement)" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs font-bold">
+          <input id="stVendorPhone" type="tel" placeholder="Numéro WhatsApp Officiel (ex: +225 07...)" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs font-bold">
           
-          <select id="vendorSpecialtyInput" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-bold text-emerald-800">
-            <option value="Gérant de Résidences (Formule Commission)">🔑 Gérant de Résidences (Sans abonnement)</option>
-            <option value="Vendeur Terrains (Abonnement 50 000 FCFA/mois)">🛰️ Vendeur Terrains (50 000 FCFA / mois)</option>
-            <option value="Agence Villas & Maisons (Abonnement 75 000 FCFA/mois)">🏡 Agence Villas & Maisons (75 000 FCFA / mois)</option>
-          </select>
-
-          <select id="hostCountryInput" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-bold">
-            <option value="🇨🇮 Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
-            <option value="🇸🇳 Sénégal">🇸🇳 Sénégal</option>
-            <option value="🇬🇳 Guinée">🇬🇳 Guinée</option>
-            <option value="🇧🇯 Bénin">🇧🇯 Bénin</option>
-            <option value="🇹🇬 Togo">🇹🇬 Togo</option>
-            <option value="🇲🇱 Mali">🇲🇱 Mali</option>
-            <option value="🇧🇫 Burkina Faso">🇧🇫 Burkina Faso</option>
-            <option value="🇨🇲 Cameroun">🇨🇲 Cameroun</option>
-          </select>
-
-          <input id="vendorPhoneInput" type="tel" placeholder="Votre numéro WhatsApp (ex: +225 07...)" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs">
-
           <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-            <label class="block text-[11px] font-extrabold text-slate-700">🪪 CNI ou RCCM (Obligatoire) :</label>
-            <input type="file" accept="image/*" class="text-xs w-full" onchange="alert('✅ Document d\'identité enregistré.')">
+            <label class="block text-[11px] font-extrabold text-slate-700">🪪 CNI du Gérant ou RCCM (Vérification Obligatoire) :</label>
+            <input type="file" accept="image/*" class="text-xs w-full" onchange="alert('✅ Pièce d\'identité enregistrée.')">
           </div>
 
-          <button onclick="registerHostAgency()" class="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-extrabold text-xs shadow">
-            ✨ Créer ma Page Vendeur
+          <!-- Encadré Abonnement Mensuel (affiché pour Terrains et Maisons) -->
+          <div id="monthlySubBox" class="hidden p-4 rounded-2xl bg-amber-50 border-2 border-amber-400 space-y-2.5 text-xs">
+            <p class="font-extrabold text-amber-950">💳 Abonnement Mensuel Obligatoire (Terrains & Villas)</p>
+            <p class="text-amber-900">Pour que vos terrains et maisons soient visibles par les clients ce mois-ci, réglez votre forfait mensuel :</p>
+            <button onclick="openMonthlySubPayment()" class="w-full py-2.5 rounded-xl bg-slate-950 text-amber-400 font-extrabold">
+              ⚡ Payer mon Abonnement du Mois (Wave / OM / MTN)
+            </button>
+          </div>
+
+          <button onclick="createVendorStorePage()" class="w-full py-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs shadow">
+            ✅ Créer ma Page Vendeur Officielle
           </button>
 
-          <div id="myCreatedStoreBox" class="hidden p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2 text-xs">
-            <p class="font-extrabold text-emerald-900">🎉 Votre Page est créée !</p>
-            <button onclick="previewMyVendorStore()" class="w-full py-2 rounded-xl bg-emerald-700 text-white font-extrabold">
-              👁️ Voir uniquement ma Page Boutique
+          <div id="createdStoreSuccess" class="hidden p-4 rounded-2xl bg-emerald-50 border border-emerald-300 space-y-2 text-xs">
+            <p class="font-extrabold text-emerald-950">🎉 Votre Page Boutique est active !</p>
+            <button onclick="openMyStorePagePublic()" class="w-full py-2.5 rounded-xl bg-slate-900 text-amber-300 font-extrabold">
+              👁️ Ouvrir ma Page Boutique personnelle
             </button>
           </div>
         </div>
 
-        <!-- COLONNE DROITE (8 cols) : PUBLIER UN BIEN -->
-        <div class="lg:col-span-8 bg-white rounded-3xl p-5 k-shadow border border-slate-200 space-y-4">
-          <div class="flex items-center gap-2">
-            <span class="w-7 h-7 rounded-full bg-amber-500 text-black font-extrabold flex items-center justify-center text-xs">2</span>
-            <h3 class="font-extrabold text-sm text-slate-900">Publier un Bien sur ma Page</h3>
-          </div>
+        <!-- Étape B : Formulaire de Publication Sur-Mesure -->
+        <div class="lg:col-span-7 bg-white p-6 rounded-3xl border border-slate-200 airbnb-card space-y-4">
+          <h3 id="studioFormHeading" class="font-extrabold text-base text-rose-600">
+            2. Ajouter une Résidence Meublée (Location par nuit)
+          </h3>
 
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <button onclick="setVendorFormType('residence')" id="vfTab-residence" class="p-3 rounded-2xl bg-emerald-700 text-white text-xs font-extrabold text-left">
-              🔑 1. Une Résidence<br><span class="text-[10px] opacity-80">Location par nuitée</span>
-            </button>
-            <button onclick="setVendorFormType('terrain')" id="vfTab-terrain" class="p-3 rounded-2xl bg-slate-100 text-slate-800 text-xs font-extrabold text-left">
-              🛰️ 2. Un Terrain<br><span class="text-[10px] opacity-80">Visibilité par abonnement/mois</span>
-            </button>
-            <button onclick="setVendorFormType('maison')" id="vfTab-maison" class="p-3 rounded-2xl bg-slate-100 text-slate-800 text-xs font-extrabold text-left">
-              🏡 3. Une Maison / Villa<br><span class="text-[10px] opacity-80">Visibilité par abonnement/mois</span>
-            </button>
-          </div>
-
-          <!-- Bandeau d'avertissement Abonnement Mensuel quand le vendeur choisit Terrain ou Maison -->
-          <div id="vendorMonthlySubNotice" class="hidden p-3.5 rounded-2xl bg-amber-50 border border-amber-300 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div class="text-amber-950">
-              <p class="font-extrabold">📌 Espace Terrains & Maisons : Visibilité par Abonnement Mensuel</p>
-              <p class="text-[11px]">Pour que vos terrains et maisons restent visibles auprès des acheteurs, votre page doit avoir son abonnement mensuel actif.</p>
-            </div>
-            <button onclick="openVendorSubscriptionModal()" class="px-3 py-2 rounded-xl bg-slate-900 text-amber-300 font-extrabold shrink-0">
-              Payer mon mois →
-            </button>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-            <select id="vCountry" onchange="populateVendorCommunes()" class="bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-bold">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <select id="stCountry" onchange="populateStudioCommunes()" class="bg-slate-50 border border-slate-300 rounded-xl p-3 font-bold">
               <option value="CI">🇨🇮 Côte d'Ivoire</option>
               <option value="SN">🇸🇳 Sénégal</option>
               <option value="GN">🇬🇳 Guinée</option>
@@ -283,295 +292,265 @@
               <option value="BF">🇧🇫 Burkina Faso</option>
               <option value="CM">🇨🇲 Cameroun</option>
             </select>
-            <select id="vCommune" class="bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-bold text-emerald-800"></select>
+            <select id="stCommune" class="bg-slate-50 border border-slate-300 rounded-xl p-3 font-extrabold text-slate-900"></select>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-            <input id="vTitle" type="text" placeholder="Titre (ex: Appartement 2 Pièces Haut Standing)" class="bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-semibold">
-            <input id="vPrice" type="number" placeholder="Prix d'une nuit en FCFA (ex: 35000)" class="bg-slate-50 border border-slate-300 rounded-xl p-2.5 font-extrabold text-emerald-900">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <input id="stTitle" type="text" placeholder="Nom de la résidence (ex: Studio Américain Chic)" class="bg-slate-50 border border-slate-300 rounded-xl p-3 font-bold">
+            <input id="stPrice" type="number" placeholder="Prix PAR NUIT en FCFA (ex: 30000)" class="bg-slate-50 border border-slate-300 rounded-xl p-3 font-extrabold text-emerald-800">
           </div>
 
-          <input id="vLocation" type="text" placeholder="Quartier exact & Distance Goudron (ex: Cocody Angré 8e Tranche, à 50m du bitume)" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs">
+          <input id="stLocation" type="text" placeholder="Quartier & Repère Goudron (ex: Cocody Angré 8e Tranche, à 50m du bitume)" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs">
 
-          <!-- CHAMPS RÉSIDENCE -->
-          <div id="vfFields-residence" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs bg-emerald-50/60 p-3.5 rounded-2xl border border-emerald-200">
+          <!-- CHAMPS UNIQUEMENT POUR RÉSIDENCES -->
+          <div id="specFields-residence" class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-xs">
             <div>
-              <label class="font-bold text-emerald-900 block mb-1">⚡💧 Autonomie Eau & Électricité :</label>
-              <select id="vResPower" class="w-full bg-white border border-slate-300 rounded-xl p-2 font-semibold">
+              <label class="font-extrabold text-rose-900 block mb-1">⚡💧 Secours Eau & Courant :</label>
+              <select id="stResPower" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 font-bold">
                 <option value="⚡ Groupe Électrogène + 💧 Suppresseur">⚡ Groupe Électrogène + 💧 Suppresseur</option>
                 <option value="⚡ Panneau Solaire + 💧 Réserve d'eau">⚡ Panneau Solaire + 💧 Réserve d'eau</option>
                 <option value="💧 Réserve d'eau + ❄️ Clim & Fibre">💧 Réserve d'eau + ❄️ Clim & Fibre</option>
               </select>
             </div>
             <div>
-              <label class="font-bold text-emerald-900 block mb-1">🛋️ Équipements inclus :</label>
-              <input id="vResDetails" type="text" placeholder="Wi-Fi Fibre, Netflix, Canal+, Gardien 24/7" class="w-full bg-white border border-slate-300 rounded-xl p-2">
+              <label class="font-extrabold text-rose-900 block mb-1">🛋️ Équipements de la résidence :</label>
+              <input id="stResEquip" type="text" placeholder="Wi-Fi Fibre, Netflix, Canal+, Gardien 24h/24" class="w-full bg-white border border-slate-300 rounded-xl p-2.5">
             </div>
           </div>
 
-          <!-- CHAMPS TERRAIN -->
-          <div id="vfFields-terrain" class="hidden grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs bg-amber-50 p-3.5 rounded-2xl border border-amber-200">
+          <!-- CHAMPS UNIQUEMENT POUR TERRAINS (ZÉRO NUIT !) -->
+          <div id="specFields-terrain" class="hidden grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-amber-50 border border-amber-300 text-xs">
             <div>
-              <label class="font-bold text-amber-900 block mb-1">📐 Superficie en m² :</label>
-              <input id="vTerArea" type="number" placeholder="Ex: 500 ou 600" class="w-full bg-white border border-slate-300 rounded-xl p-2 font-bold">
+              <label class="font-extrabold text-amber-950 block mb-1">📐 Superficie (en m²) :</label>
+              <input id="stTerArea" type="number" placeholder="Ex: 600" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 font-extrabold">
             </div>
             <div>
-              <label class="font-bold text-amber-900 block mb-1">📄 Document Foncier :</label>
-              <select id="vTerDoc" class="w-full bg-white border border-slate-300 rounded-xl p-2 font-bold">
-                <option value="🛡️ ACD Signé & Vérifié">🛡️ ACD Signé & Vérifié</option>
-                <option value="🛡️ Titre Foncier (TF)">🛡️ Titre Foncier (TF)</option>
-                <option value="📄 Lotissement Approuvé + Topo">📄 Lotissement Approuvé + Topo</option>
+              <label class="font-extrabold text-amber-950 block mb-1">📄 Document Foncier :</label>
+              <select id="stTerDoc" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 font-bold">
+                <option value="ACD Signé & Vérifié">🛡️ ACD Signé & Vérifié</option>
+                <option value="Titre Foncier (TF)">🛡️ Titre Foncier (TF)</option>
+                <option value="Approbation Ministérielle">📄 Approbation Ministérielle</option>
               </select>
             </div>
             <div>
-              <label class="font-bold text-amber-900 block mb-1">🛰️ Numéro de Lot / Îlot :</label>
-              <input id="vTerLot" type="text" placeholder="Ex: Lot 142, Îlot 18" class="w-full bg-white border border-slate-300 rounded-xl p-2">
+              <label class="font-extrabold text-amber-950 block mb-1">🛰️ N° Lot & Îlot :</label>
+              <input id="stTerLot" type="text" placeholder="Ex: Lot 142, Îlot 18" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 font-bold">
             </div>
           </div>
 
-          <!-- CHAMPS MAISON -->
-          <div id="vfFields-maison" class="hidden grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs bg-blue-50 p-3.5 rounded-2xl border border-blue-200">
+          <!-- CHAMPS UNIQUEMENT POUR MAISONS & VILLAS (ZÉRO NUIT !) -->
+          <div id="specFields-maison" class="hidden grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-blue-50 border border-blue-200 text-xs">
             <div>
-              <label class="font-bold text-blue-900 block mb-1">🏠 Nombre de Pièces :</label>
-              <input id="vMaiRooms" type="text" placeholder="Ex: Villa Duplex 5 Pièces" class="w-full bg-white border border-slate-300 rounded-xl p-2 font-bold">
+              <label class="font-extrabold text-blue-950 block mb-1">🏛️ Type & Nombre de Pièces :</label>
+              <input id="stMaiRooms" type="text" placeholder="Ex: Villa Duplex 5 Pièces" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 font-bold">
             </div>
             <div>
-              <label class="font-bold text-blue-900 block mb-1">📐 Surface du terrain (m²) :</label>
-              <input id="vMaiArea" type="number" placeholder="Ex: 450" class="w-full bg-white border border-slate-300 rounded-xl p-2 font-bold">
+              <label class="font-extrabold text-blue-950 block mb-1">📐 Surface Terrain (m²) :</label>
+              <input id="stMaiArea" type="number" placeholder="Ex: 450" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 font-bold">
             </div>
             <div>
-              <label class="font-bold text-blue-900 block mb-1">📄 Titre de Propriété :</label>
-              <select id="vMaiDoc" class="w-full bg-white border border-slate-300 rounded-xl p-2 font-bold">
-                <option value="🛡️ ACD + Certificat de Propriété">🛡️ ACD + Certificat Propriété</option>
-                <option value="🛡️ Titre Foncier Individuel">🛡️ Titre Foncier Individuel</option>
+              <label class="font-extrabold text-blue-950 block mb-1">📄 Titre Juridique :</label>
+              <select id="stMaiDoc" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 font-bold">
+                <option value="ACD + Certificat de Propriété">🛡️ ACD + Certificat Propriété</option>
+                <option value="Titre Foncier Individuel">🛡️ Titre Foncier Individuel</option>
               </select>
             </div>
           </div>
 
-          <!-- VRAIE PHOTO DU TÉLÉPHONE -->
-          <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-2">
+          <!-- Photo depuis le téléphone -->
+          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
             <div>
-              <p class="text-xs font-extrabold text-slate-900">📸 Photo réelle depuis la galerie de votre téléphone :</p>
-              <p id="photoUploadStatus" class="text-[11px] text-slate-500">Aucune photo sélectionnée</p>
+              <p class="text-xs font-extrabold text-slate-900">📸 Ajouter la vraie photo depuis votre téléphone</p>
+              <p id="stPhotoStatus" class="text-[11px] text-slate-500">Choisissez une image dans votre galerie</p>
             </div>
-            <label class="px-3.5 py-2 rounded-xl bg-slate-900 text-amber-300 text-xs font-extrabold cursor-pointer">
-              📁 Choisir une photo
-              <input id="vPhotoFile" type="file" accept="image/*" class="hidden" onchange="handleRealPhotoUpload(event)">
+            <label class="px-4 py-2 rounded-xl bg-slate-900 text-amber-400 text-xs font-extrabold cursor-pointer">
+              📁 Galerie Photo
+              <input type="file" accept="image/*" class="hidden" onchange="uploadRealPhoto(event)">
             </label>
           </div>
 
-          <button onclick="addNewProperty()" class="w-full py-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs shadow-lg">
-            🚀 Publier sur ma Page & sur K-TERRA
+          <button onclick="publishVendorListing()" class="w-full py-3.5 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs shadow-lg">
+            🚀 Publier maintenant dans cet Univers
           </button>
         </div>
-
       </div>
-    </section>
+    </main>
 
   </div>
 
-  <!-- BARRE DE NAVIGATION MOBILE EN BAS -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 px-2 py-2 flex justify-around items-center text-[11px] font-bold text-slate-500">
-    <button onclick="showSection('home'); setDomain('residence');" class="flex flex-col items-center text-emerald-700">
-      <i class="fa-solid fa-key text-base mb-0.5"></i>
-      <span>Résidences</span>
+  <!-- BARRE DE NAVIGATION MOBILE EN BAS (100% PUBLIQUE — ZÉRO BOUTON ADMIN) -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 px-2 py-2 flex justify-around items-center text-[11px] font-extrabold text-slate-500">
+    <button onclick="switchUniverse('residence')" id="bNav-residence" class="flex flex-col items-center text-rose-600">
+      <i class="fa-solid fa-bed text-base mb-0.5"></i>
+      <span>1. Résidences</span>
     </button>
-    <button onclick="showSection('home'); setDomain('terrain');" class="flex flex-col items-center hover:text-emerald-700">
-      <i class="fa-solid fa-satellite text-base mb-0.5"></i>
-      <span>Terrains m²</span>
+    <button onclick="switchUniverse('terrain')" id="bNav-terrain" class="flex flex-col items-center">
+      <i class="fa-solid fa-map-location-dot text-base mb-0.5"></i>
+      <span>2. Terrains m²</span>
     </button>
-    <button onclick="showSection('home'); setDomain('maison');" class="flex flex-col items-center hover:text-emerald-700">
-      <i class="fa-solid fa-cube text-base mb-0.5"></i>
-      <span>Villas 3D</span>
+    <button onclick="switchUniverse('maison')" id="bNav-maison" class="flex flex-col items-center">
+      <i class="fa-solid fa-house-chimney-window text-base mb-0.5"></i>
+      <span>3. Villas 3D</span>
     </button>
-    <button onclick="showSection('vendor')" class="flex flex-col items-center text-amber-600">
+    <button onclick="switchUniverse('studio')" id="bNav-studio" class="flex flex-col items-center text-amber-600">
       <i class="fa-solid fa-store text-base mb-0.5"></i>
-      <span>Espace Vendeur</span>
+      <span>4. Créer Page</span>
     </button>
   </nav>
 
   <!-- ===================================================================== -->
-  <!-- FENÊTRE D'INSPECTION & GARANTIE PASS ÉCHANGE                          -->
+  <!-- MODAL D'ACTION SUR-MESURE (3 GUICHETS TOTALEMENT DIFFÉRENTS)          -->
   <!-- ===================================================================== -->
-  <div id="propertyModal" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-3 sm:p-5 overflow-y-auto">
-    <div class="bg-white max-w-4xl w-full rounded-3xl overflow-hidden k-shadow my-auto">
+  <div id="detailModal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div class="bg-white max-w-4xl w-full rounded-3xl overflow-hidden shadow-2xl my-auto">
       
       <div class="p-4 sm:p-5 border-b border-slate-200 flex items-start justify-between gap-2">
         <div>
-          <div class="flex flex-wrap items-center gap-1.5">
-            <span id="modalLegal" class="text-[11px] font-extrabold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full"></span>
-            <span id="modalSecondBadge" class="text-[11px] font-extrabold text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full"></span>
-          </div>
-          <h2 id="modalTitle" class="text-lg sm:text-xl font-extrabold text-slate-900 mt-1"></h2>
-          <p id="modalLocation" class="text-xs text-emerald-700 font-bold"></p>
+          <span id="mdBadge" class="text-[11px] font-extrabold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800"></span>
+          <h2 id="mdTitle" class="text-lg sm:text-xl font-extrabold text-slate-900 mt-1.5"></h2>
+          <p id="mdLocation" class="text-xs font-bold text-slate-500"></p>
         </div>
-        <div class="flex items-center gap-2">
-          <button onclick="shareCurrentPropertyWhatsApp()" class="px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold flex items-center gap-1">
-            <i class="fa-brands fa-whatsapp"></i><span>Partager</span>
-          </button>
-          <button onclick="closePropertyModal()" class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-        </div>
+        <button onclick="closeDetailModal()" class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
       <div class="px-5 pt-3 flex flex-wrap gap-2">
-        <button onclick="switchModalView('photo')" id="mBtn-photo" class="px-4 py-1.5 rounded-full bg-emerald-700 text-white text-xs font-bold">📸 Photos & Dossier</button>
-        <button onclick="switchModalView('satellite')" id="mBtn-satellite" class="px-4 py-1.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold">🛰️ Carte Satellite & Bornes GPS</button>
-        <button onclick="switchModalView('3d')" id="mBtn-3d" class="px-4 py-1.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold">🏠 Visite 3D (Toit Amovible)</button>
+        <button onclick="setModalTab('photo')" id="mTab-photo" class="px-4 py-1.5 rounded-full bg-slate-900 text-white text-xs font-bold">📸 Photos & Dossier</button>
+        <button onclick="setModalTab('sat')" id="mTab-sat" class="px-4 py-1.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold">🛰️ Vue Satellite & Bornes GPS</button>
+        <button onclick="setModalTab('3d')" id="mTab-3d" class="px-4 py-1.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold">🏠 Maquette 3D Interactive</button>
       </div>
 
       <div class="p-5 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         <div class="lg:col-span-7">
-          <div id="mView-photo" class="space-y-3">
-            <img id="modalImg" src="" class="w-full h-64 object-cover rounded-2xl border border-slate-200">
-            <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-1.5">
-              <p class="text-xs font-extrabold text-slate-900">📋 Caractéristiques & Vendeur :</p>
-              <p id="modalDetailsText" class="text-xs font-semibold text-slate-600"></p>
+          <div id="mPane-photo" class="space-y-3">
+            <img id="mdImg" src="" class="w-full h-64 object-cover rounded-2xl border border-slate-200">
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1">
+              <p class="font-extrabold text-slate-900">📋 Informations & Boutique Partenaire :</p>
+              <p id="mdDesc" class="text-slate-600 font-semibold"></p>
             </div>
           </div>
-
-          <div id="mView-satellite" class="hidden space-y-2">
-            <div id="clientSatMap" class="w-full h-64 rounded-2xl border-2 border-emerald-600 overflow-hidden"></div>
-            <p id="satCaptionText" class="text-xs text-emerald-900 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 font-semibold"></p>
+          <div id="mPane-sat" class="hidden space-y-2">
+            <div id="satMapContainer" class="w-full h-64 rounded-2xl border-2 border-amber-500 overflow-hidden"></div>
+            <p id="satInfoText" class="text-xs font-bold text-slate-800 bg-amber-50 p-2.5 rounded-xl border border-amber-200"></p>
           </div>
-
-          <div id="mView-3d" class="hidden">
+          <div id="mPane-3d" class="hidden">
             <div class="relative bg-slate-900 rounded-2xl h-64 overflow-hidden">
-              <canvas id="simple3DCanvas" width="500" height="256" class="w-full h-full cursor-grab"></canvas>
-              <button onclick="toggleSimpleRoof()" class="absolute top-3 left-3 px-3 py-1.5 rounded-xl bg-white text-slate-900 text-xs font-extrabold">
+              <canvas id="canvas3D" width="500" height="256" class="w-full h-full cursor-grab"></canvas>
+              <button onclick="toggleRoof3D()" class="absolute top-3 left-3 px-3 py-1.5 rounded-xl bg-white text-slate-900 text-xs font-extrabold">
                 🏠 Enlever / Remettre le Toit
               </button>
             </div>
           </div>
         </div>
 
-        <!-- =============================================================== -->
-        <!-- GUICHETS SPÉCIFIQUES : RÉSIDENCE (15% + PASS ÉCHANGE) vs TERRAIN/MAISON -->
-        <!-- =============================================================== -->
-        <div class="lg:col-span-5 bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
-          
-          <!-- GUICHET 1 : RÉSIDENCE (AVEC BOUCLIER PASS ÉCHANGE GRATUIT !) -->
-          <div id="boxAction-residence" class="space-y-3">
-            <div class="flex items-baseline justify-between border-b border-slate-200 pb-2">
+        <!-- COLONNE DROITE : CHANGE TOTALEMENT SELON L'UNIVERS -->
+        <div class="lg:col-span-5 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+
+          <!-- 1. GUICHET RÉSIDENCE (Calcul de Nuits + Avance 15% + Garantie Pass Échange) -->
+          <div id="panel-residence" class="space-y-3">
+            <div class="flex justify-between items-baseline border-b border-slate-200 pb-2">
               <div>
-                <span id="resModalPrice" class="text-2xl font-extrabold text-slate-900"></span>
-                <span class="text-xs text-slate-500 font-bold"> / nuit</span>
+                <span id="resPriceNight" class="text-2xl font-extrabold text-rose-600"></span>
+                <span class="text-xs font-bold text-slate-500"> / nuit</span>
               </div>
-              <span class="text-xs font-extrabold text-emerald-700">🟢 Dispo ce soir</span>
+              <span class="text-xs font-extrabold text-emerald-700">🟢 Disponible</span>
             </div>
 
             <div class="bg-white p-2.5 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
-              <span class="font-bold text-slate-700">Durée du séjour :</span>
-              <select id="nightsSelect" onchange="updateTotalStay()" class="bg-slate-100 border border-slate-300 rounded-lg px-2.5 py-1 font-extrabold text-slate-900">
+              <span class="font-bold">Durée du séjour :</span>
+              <select id="resNights" onchange="calcResStay()" class="bg-slate-100 border border-slate-300 rounded-lg px-2 py-1 font-extrabold">
                 <option value="1">1 nuit</option>
                 <option value="2" selected>2 nuits (Week-end)</option>
                 <option value="3">3 nuits</option>
                 <option value="7">7 nuits (-10%)</option>
-                <option value="30">30 nuits (-25%)</option>
               </select>
             </div>
 
-            <div class="bg-white p-3 rounded-xl border border-emerald-200 space-y-1.5 text-xs">
-              <div class="flex justify-between text-slate-600">
+            <div class="bg-white p-3 rounded-xl border border-rose-200 space-y-1.5 text-xs">
+              <div class="flex justify-between">
                 <span>Total du séjour :</span>
-                <span id="totalStayPrice" class="font-bold text-slate-900"></span>
+                <span id="resTotal" class="font-extrabold"></span>
               </div>
-              <div class="flex justify-between text-emerald-900 font-extrabold bg-emerald-50 p-2 rounded-lg border border-emerald-200">
-                <span>⚡ Avance Garantie K-TERRA (<span id="commPctLabel">15</span>%) :</span>
-                <span id="advanceCommissionPrice"></span>
+              <div class="flex justify-between bg-rose-50 text-rose-900 p-2 rounded-lg font-extrabold border border-rose-200">
+                <span>⚡ Avance en ligne (15%) :</span>
+                <span id="resAdvance"></span>
               </div>
               <div class="flex justify-between text-[11px] text-slate-500">
                 <span>Reste (85%) à payer sur place après visite :</span>
-                <span id="balanceHostPrice" class="font-bold"></span>
+                <span id="resBalance" class="font-bold"></span>
               </div>
             </div>
 
-            <!-- LA GARANTIE ANTI-PROBLÈME SI LE CLIENT N'AIME PAS LA RÉSIDENCE -->
-            <div class="p-2.5 rounded-xl bg-amber-50 border border-amber-300 text-[11px] text-amber-950 space-y-1">
-              <p class="font-extrabold">🛡️ Et si la résidence ne me plaît pas en arrivant ?</p>
-              <p>Vous ne payez les 85% qu'après avoir vu la résidence ! Si elle n'est pas conforme dans les 30 min, votre <strong>Pass K-TERRA vous permet de changer gratuitement pour une autre résidence</strong> ou reste valable 30 jours.</p>
+            <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-300 text-[11px] text-emerald-950">
+              🛡️ <strong>Garantie Pass Échange :</strong> Si la résidence ne vous plaît pas à votre arrivée, votre Pass vous permet de choisir une autre résidence sur K-TERRA sans repayer !
             </div>
 
-            <input id="resClientPhone" type="tel" placeholder="Votre numéro WhatsApp (ex: +225 07...)" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs">
-
-            <button onclick="openBookingPayModal('residence')" class="w-full py-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs shadow-md">
-              🔑 Bloquer les clés (Avance 15% + Garantie Pass Échange)
+            <input id="resPhone" type="tel" placeholder="Votre WhatsApp (ex: +225 07...)" class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs">
+            <button onclick="openPaymentWindow('residence')" class="w-full py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs shadow">
+              🔑 Payer l'avance (15%) & Obtenir mon Pass K-TERRA
             </button>
           </div>
 
-          <!-- GUICHET 2 : TERRAIN (VENDEUR ABONNÉ AU MOIS -> DEMANDE D'ACHAT DIRECTE) -->
-          <div id="boxAction-terrain" class="hidden space-y-3">
+          <!-- 2. GUICHET TERRAIN (AUCUNE NUITÉE ! Superficie m², Prix/m², Lot/Îlot, Visite Gratuite) -->
+          <div id="panel-terrain" class="hidden space-y-3">
             <div class="border-b border-slate-200 pb-2">
-              <span class="text-[11px] font-bold text-amber-800 uppercase">Prix Total du Terrain Foncier</span>
-              <div id="terModalPrice" class="text-2xl font-extrabold text-slate-900"></div>
+              <span class="text-[10px] font-extrabold uppercase bg-amber-400 text-black px-2 py-0.5 rounded">Achat Foncier Cadastré</span>
+              <div id="terTotalPrice" class="text-2xl font-extrabold text-slate-900 mt-1"></div>
+            </div>
+
+            <div class="bg-slate-900 text-white p-3.5 rounded-2xl space-y-2 text-xs">
+              <div class="flex justify-between border-b border-slate-800 pb-1.5">
+                <span class="text-slate-400">📐 Superficie exacte :</span>
+                <span id="terArea" class="font-extrabold text-amber-400"></span>
+              </div>
+              <div class="flex justify-between border-b border-slate-800 pb-1.5">
+                <span class="text-slate-400">💰 Prix au m² :</span>
+                <span id="terPricePerM2" class="font-bold text-emerald-400"></span>
+              </div>
+              <div class="flex justify-between border-b border-slate-800 pb-1.5">
+                <span class="text-slate-400">🛰️ Référence Lot / Îlot :</span>
+                <span id="terLotInfo" class="font-bold text-white"></span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">📄 Document :</span>
+                <span id="terDocInfo" class="font-extrabold text-emerald-400"></span>
+              </div>
+            </div>
+
+            <input id="terBuyerPhone" type="tel" placeholder="Votre numéro WhatsApp Acheteur..." class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs">
+            <button onclick="bookFreeVisit('TERRAIN')" class="w-full py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs shadow">
+              🛰️ Planifier une Visite du Terrain & Vérifier l'ACD (Gratuit)
+            </button>
+          </div>
+
+          <!-- 3. GUICHET MAISON / VILLA (AUCUNE NUITÉE ! Pièces, Surface, Échéancier Notaire) -->
+          <div id="panel-maison" class="hidden space-y-3">
+            <div class="border-b border-slate-200 pb-2">
+              <span class="text-[10px] font-extrabold uppercase bg-sky-400 text-black px-2 py-0.5 rounded">Acquisition Villa Clé en Main</span>
+              <div id="maiTotalPrice" class="text-2xl font-extrabold text-slate-900 mt-1"></div>
             </div>
 
             <div class="bg-white p-3 rounded-xl border border-slate-200 space-y-1.5 text-xs">
               <div class="flex justify-between">
-                <span class="text-slate-500">📐 Superficie cadastrale :</span>
-                <span id="terModalArea" class="font-extrabold text-slate-900"></span>
+                <span class="text-slate-500">🏛️ Type de bien :</span>
+                <span id="maiRoomsInfo" class="font-extrabold"></span>
               </div>
               <div class="flex justify-between">
-                <span class="text-slate-500">📄 Titre juridique :</span>
-                <span id="terModalDoc" class="font-extrabold text-emerald-700"></span>
+                <span class="text-slate-500">📐 Terrain :</span>
+                <span id="maiAreaInfo" class="font-extrabold"></span>
               </div>
               <div class="flex justify-between">
-                <span class="text-slate-500">🏪 Lotisseur :</span>
-                <span id="terModalVendor" class="font-extrabold text-slate-900"></span>
+                <span class="text-slate-500">📄 Acte :</span>
+                <span id="maiDocInfo" class="font-extrabold text-emerald-700"></span>
+              </div>
+              <div class="flex justify-between pt-1 border-t border-slate-100 text-blue-900 font-bold">
+                <span>Apport Notaire (30%) :</span>
+                <span id="maiDeposit30"></span>
               </div>
             </div>
 
-            <div class="bg-white p-2.5 rounded-xl border border-slate-200 text-xs space-y-1">
-              <label class="font-bold text-slate-700 block">Modalité d'achat souhaitée devant Notaire :</label>
-              <select id="terPayPlan" onchange="updateTerrainPlan()" class="w-full bg-slate-100 border border-slate-300 rounded-lg p-2 font-extrabold text-slate-900">
-                <option value="cash">1. Paiement Comptant chez le Notaire</option>
-                <option value="tranches">2. Échéancier (30% Apport + 12 mensualités)</option>
-              </select>
-              <p id="terPlanResult" class="text-[11px] font-bold text-emerald-800 pt-1"></p>
-            </div>
-
-            <input id="terClientPhone" type="tel" placeholder="Votre numéro WhatsApp Acheteur..." class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs">
-
-            <button onclick="sendFreePropertyVisitRequest('TERRAIN')" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs shadow-md">
-              🛰️ Demander une Visite du Terrain & Dossier ACD (Gratuit)
-            </button>
-          </div>
-
-          <!-- GUICHET 3 : MAISON / VILLA (VENDEUR ABONNÉ AU MOIS -> DEMANDE D'ACHAT DIRECTE) -->
-          <div id="boxAction-maison" class="hidden space-y-3">
-            <div class="border-b border-slate-200 pb-2">
-              <span class="text-[11px] font-bold text-blue-800 uppercase">Prix de Vente Officiel</span>
-              <div id="maiModalPrice" class="text-2xl font-extrabold text-slate-900"></div>
-            </div>
-
-            <div class="bg-white p-3 rounded-xl border border-slate-200 space-y-1.5 text-xs">
-              <div class="flex justify-between">
-                <span class="text-slate-500">🏠 Configuration :</span>
-                <span id="maiModalRooms" class="font-extrabold text-slate-900"></span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-500">📐 Surface du terrain :</span>
-                <span id="maiModalArea" class="font-extrabold text-slate-900"></span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-500">📄 Acte de propriété :</span>
-                <span id="maiModalDoc" class="font-extrabold text-emerald-700"></span>
-              </div>
-            </div>
-
-            <div class="bg-white p-2.5 rounded-xl border border-slate-200 text-xs space-y-1">
-              <label class="font-bold text-slate-700 block">Plan de financement souhaité :</label>
-              <select id="maiPayPlan" onchange="updateMaisonPlan()" class="w-full bg-slate-100 border border-slate-300 rounded-lg p-2 font-extrabold text-slate-900">
-                <option value="cash">1. Achat Comptant (Acte Notarié)</option>
-                <option value="promoteur">2. Échéancier Promoteur (Apport 30%)</option>
-                <option value="banque">3. Crédit Immobilier Bancaire</option>
-              </select>
-              <p id="maiPlanResult" class="text-[11px] font-bold text-blue-800 pt-1"></p>
-            </div>
-
-            <input id="maiClientPhone" type="tel" placeholder="Votre numéro WhatsApp Acheteur..." class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs">
-
-            <button onclick="sendFreePropertyVisitRequest('MAISON')" class="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-extrabold text-xs shadow-md">
-              🏡 Planifier une Visite Physique de la Villa (Gratuit)
+            <input id="maiBuyerPhone" type="tel" placeholder="Votre numéro WhatsApp Acheteur..." class="w-full bg-white border border-slate-300 rounded-xl p-2.5 text-xs">
+            <button onclick="bookFreeVisit('VILLA')" class="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-extrabold text-xs shadow">
+              🏛️ Demander une Visite Physique de la Villa (Gratuit)
             </button>
           </div>
 
@@ -581,120 +560,86 @@
   </div>
 
   <!-- ===================================================================== -->
-  <!-- POSTE SECRET DE MORATA (INVISIBLE POUR LE PUBLIC — CODE MORATA2026)   -->
+  <!-- POSTE DE COMMANDEMENT SECRET DE MORATA (INVISIBLE DU PUBLIC)          -->
   <!-- ===================================================================== -->
-  <div id="ownerWorld" class="hidden min-h-screen bg-slate-950 text-white p-4 sm:p-6 z-50">
+  <div id="morataSecretERP" class="hidden min-h-screen bg-slate-950 text-white p-4 sm:p-6 z-50">
     <div class="max-w-7xl mx-auto space-y-6">
 
-      <div class="emerald-header p-5 rounded-3xl border border-amber-400/40 flex flex-wrap items-center justify-between gap-4 shadow-xl">
-        <div class="flex items-center space-x-3">
-          <div class="w-12 h-12 rounded-2xl gold-badge flex items-center justify-center font-extrabold text-xl">👑</div>
-          <div>
-            <span class="text-[11px] font-extrabold uppercase text-amber-300">Accès Fantôme Propriétaire (Invisible sur WhatsApp)</span>
-            <h1 class="text-xl sm:text-2xl font-extrabold text-white">Tableau de Bord Général — Morata</h1>
-            <p class="text-xs text-emerald-100">1. Avances 15% Résidences • 2. Abonnements par Mois Terrains & Villas (50 000 / 75 000 FCFA).</p>
-          </div>
+      <div class="bg-gradient-to-r from-emerald-900 to-slate-900 p-5 rounded-3xl border border-amber-400/50 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <span class="text-[10px] font-extrabold bg-amber-400 text-black px-2.5 py-0.5 rounded-full uppercase">Mode Fantôme Activé (Invisible des Clients)</span>
+          <h1 class="text-xl sm:text-2xl font-extrabold mt-1">👑 Poste de Commandement Général — Morata</h1>
+          <p class="text-xs text-emerald-200">Contrôlez vos avances de 15% (Résidences), vos Pass Échange et les Abonnements au Mois (Terrains/Villas).</p>
         </div>
-        <button onclick="exitOwnerWorld()" class="px-4 py-2 rounded-xl bg-white text-slate-900 font-extrabold text-xs">
-          ⬅️ Sortir du Mode Secret
+        <div class="flex flex-wrap gap-2">
+          <button onclick="cleanOldSupabaseData()" class="px-4 py-2 rounded-xl bg-rose-600 text-white font-extrabold text-xs">
+            🧹 Nettoyer les anciennes annonces test Supabase
+          </button>
+          <button onclick="closeMorataSecretERP()" class="px-4 py-2 rounded-xl bg-white text-slate-900 font-extrabold text-xs">
+            ⬅️ Retour au Site Public
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 COMPTEURS AUTOMATIQUES -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-slate-900 p-5 rounded-3xl border border-emerald-500/40">
+          <p class="text-xs text-slate-400">💰 Total Encaissé (15% + Mois Vendeurs)</p>
+          <p id="erpTotalCash" class="text-2xl font-extrabold text-emerald-400 mt-1"></p>
+        </div>
+        <div class="bg-slate-900 p-5 rounded-3xl border border-rose-500/40">
+          <p class="text-xs text-slate-400">🔑 Avances 15% Résidences & Pass</p>
+          <p id="erpResCount" class="text-2xl font-extrabold text-rose-400 mt-1"></p>
+        </div>
+        <div class="bg-slate-900 p-5 rounded-3xl border border-amber-500/40">
+          <p class="text-xs text-slate-400">🛰️ Abonnements Mois (Terrains/Villas)</p>
+          <p id="erpSubCount" class="text-2xl font-extrabold text-amber-400 mt-1"></p>
+        </div>
+        <div class="bg-slate-900 p-5 rounded-3xl border border-sky-500/40">
+          <p class="text-xs text-slate-400">🏪 Pages Vendeurs Actives</p>
+          <p id="erpVendorsCount" class="text-2xl font-extrabold text-sky-400 mt-1"></p>
+        </div>
+      </div>
+
+      <!-- 1. MES NUMÉROS WAVE / OM / MTN / BNI -->
+      <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 space-y-3">
+        <h2 class="text-sm font-extrabold text-amber-400">1. Mes Numéros d'Encaissement Direct (Wave, Orange Money, MTN, BNI)</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+          <input id="erpWave" type="text" placeholder="Mon Numéro Wave" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
+          <input id="erpOm" type="text" placeholder="Mon Numéro Orange Money" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
+          <input id="erpMtn" type="text" placeholder="Mon Numéro MTN" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
+          <input id="erpBni" type="text" placeholder="Mon Compte BNI / Visa" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
+        </div>
+        <button onclick="saveMorataNumbers()" class="px-5 py-2.5 rounded-xl bg-emerald-500 text-black font-extrabold text-xs">
+          💾 Enregistrer mes numéros dans Supabase
         </button>
       </div>
 
-      <!-- 4 COMPTEURS -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-slate-900 p-5 rounded-3xl border border-emerald-500/40">
-          <p class="text-xs text-slate-400 font-semibold">💰 Total Encaissé (15% + Abonnements Mois)</p>
-          <p id="kpiTotalRevenue" class="text-2xl font-extrabold text-emerald-400 mt-1"></p>
-        </div>
-        <div class="bg-slate-900 p-5 rounded-3xl border border-amber-500/40">
-          <p class="text-xs text-slate-400 font-semibold">🧾 Paiements Reçus (Clients & Vendeurs)</p>
-          <p id="kpiBookingsCount" class="text-2xl font-extrabold text-amber-400 mt-1"></p>
-        </div>
-        <div class="bg-slate-900 p-5 rounded-3xl border border-sky-500/40">
-          <p class="text-xs text-slate-400 font-semibold">🏠 Biens Visibles en Ligne</p>
-          <p id="kpiPropertiesCount" class="text-2xl font-extrabold text-sky-400 mt-1"></p>
-        </div>
-        <div class="bg-slate-900 p-5 rounded-3xl border border-purple-500/40">
-          <p class="text-xs text-slate-400 font-semibold">🏪 Vendeurs (Coupe-Circuit Visibilité)</p>
-          <p id="kpiAgenciesCount" class="text-2xl font-extrabold text-purple-400 mt-1"></p>
-        </div>
-      </div>
-
-      <!-- RÉGLAGES COMPTES & TARIFS MENSUELS -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div class="lg:col-span-7 bg-slate-900 p-5 rounded-3xl border border-slate-800 space-y-4">
-          <h2 class="text-base font-extrabold text-amber-400">1. Mes Numéros Wave / OM / MTN / BNI & Mes Tarifs</h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <div>
-              <label class="text-slate-400 block mb-1">🌊 Mon Numéro Wave :</label>
-              <input id="cfgWave" type="text" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
-            </div>
-            <div>
-              <label class="text-slate-400 block mb-1">🍊 Mon Numéro Orange Money :</label>
-              <input id="cfgOm" type="text" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
-            </div>
-            <div>
-              <label class="text-slate-400 block mb-1">💛 Mon Numéro MTN MoMo :</label>
-              <input id="cfgMtn" type="text" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
-            </div>
-            <div>
-              <label class="text-slate-400 block mb-1">💳 Mon Compte / Visa BNI :</label>
-              <input id="cfgBni" type="text" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white font-bold">
-            </div>
-          </div>
-          <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800 text-xs">
-            <div class="flex items-center gap-2">
-              <span class="text-slate-300 font-bold">Avance Résidences (%) :</span>
-              <input id="cfgCommissionPct" type="number" value="15" class="w-16 bg-slate-950 border border-amber-400 rounded-xl p-2 text-center font-extrabold text-amber-300">
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-slate-300 font-bold">Abonnement Mois Terrains/Villas (FCFA) :</span>
-              <input id="cfgMonthlySub" type="number" value="50000" class="w-28 bg-slate-950 border border-amber-400 rounded-xl p-2 text-center font-extrabold text-amber-300">
-            </div>
-            <button onclick="saveExecutiveConfig()" class="px-4 py-2.5 rounded-xl bg-emerald-500 text-black font-extrabold">
-              💾 Enregistrer
-            </button>
-          </div>
-        </div>
-
-        <div class="lg:col-span-5 bg-slate-900 p-5 rounded-3xl border border-slate-800 flex flex-col justify-between space-y-3">
-          <div>
-            <h2 class="text-base font-extrabold text-emerald-400">2. Lien & QR Code Public K-TERRA</h2>
-            <p class="text-xs text-slate-400 mt-1">Tapez <strong>MORATA2026</strong> dans la recherche pour revenir ici :</p>
-          </div>
-          <div class="flex items-center gap-4 bg-slate-950 p-3 rounded-2xl border border-slate-800">
-            <img id="ownerQrImg" src="" alt="QR Code" class="w-24 h-24 rounded-xl bg-white p-1.5 shrink-0">
-            <div class="space-y-2 flex-1">
-              <input id="appUrlCopyInput" type="text" readonly class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-[11px] text-amber-300 font-mono">
-              <button onclick="copyAppLink()" class="w-full py-2 rounded-xl bg-amber-400 text-black font-extrabold text-xs">📋 Copier le lien</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- CONTRÔLE DES VENDEURS : CACHER AUTOMATIQUEMENT SI LE MOIS N'EST PAS PAYÉ -->
+      <!-- 2. COUPE-CIRCUIT DES ABONNEMENTS AU MOIS (TERRAINS & MAISONS) -->
       <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 space-y-3">
-        <h2 class="text-base font-extrabold text-white">
-          3. Contrôle des Abonnements Mensuels & Gérants (Si vous mettez « BLOQUÉ 🔴 », tous leurs terrains/maisons deviennent invisibles !)
+        <h2 class="text-sm font-extrabold text-white">
+          2. Contrôle des Vendeurs de Terrains & Villas (Si le mois n'est pas payé → Cliquez pour cacher toutes leurs annonces !)
         </h2>
-        <div id="executiveAgenciesList" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+        <div id="erpVendorsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
       </div>
 
-      <!-- TABLEAU DES PAIEMENTS REÇUS -->
+      <!-- 3. GESTION DES AVANCES 15% & DU PASS ÉCHANGE SI UN CLIENT VEUT CHANGER DE RÉSIDENCE -->
       <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 space-y-3">
-        <h2 class="text-base font-extrabold text-white">4. Journal de mes Encaissements (Avances 15% Résidences & Abonnements Mensuels Terrains/Villas)</h2>
+        <h2 class="text-sm font-extrabold text-white">
+          3. Mes Encaissements & Bouton « Pass Échange » (Si un client n'aime pas une résidence en arrivant, cliquez sur Échanger : vous gardez vos 15% !)
+        </h2>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
             <thead>
               <tr class="border-b border-slate-800 text-slate-400">
-                <th class="py-2 px-3">Type d'Encaissement</th>
+                <th class="py-2 px-3">Opération</th>
                 <th class="py-2 px-3">Client / Vendeur</th>
-                <th class="py-2 px-3">Montant Reçu</th>
+                <th class="py-2 px-3">Encaissé par Morata</th>
                 <th class="py-2 px-3">Réf. Wave/OM</th>
-                <th class="py-2 px-3">Code Pass / Statut</th>
+                <th class="py-2 px-3">Pass / Action</th>
               </tr>
             </thead>
-            <tbody id="executiveBookingsTable" class="divide-y divide-slate-800"></tbody>
+            <tbody id="erpLedgerTable" class="divide-y divide-slate-800"></tbody>
           </table>
         </div>
       </div>
@@ -702,448 +647,456 @@
     </div>
   </div>
 
-  <!-- MODAL PAIEMENT OFFICIEL (UTILISÉ POUR L'AVANCE 15% RÉSIDENCE OU L'ABONNEMENT MENSUEL VENDEUR) -->
+  <!-- MODAL GUICHET DE PAIEMENT WAVE / OM / MTN -->
   <div id="payModal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
     <div class="bg-white max-w-md w-full rounded-3xl p-6 space-y-4">
       <div class="flex justify-between items-center border-b border-slate-200 pb-3">
         <h3 class="font-extrabold text-base text-slate-900">Guichet Officiel K-TERRA</h3>
-        <button onclick="closePayModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="closePayWindow()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl text-xs space-y-1">
-        <p class="font-extrabold text-emerald-950" id="payModalSummaryTitle"></p>
-        <p class="text-emerald-800 font-bold" id="payModalAdvanceAmount"></p>
+        <p id="payTitle" class="font-extrabold text-emerald-950"></p>
+        <p id="payAmount" class="font-extrabold text-rose-600 text-sm"></p>
       </div>
-      <div id="payNumbersDisplay" class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1.5 text-slate-800 font-semibold"></div>
-      <input id="txInput" type="text" placeholder="Référence du paiement Wave / Orange Money / MTN..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs font-bold">
-      <button onclick="validatePayment()" class="w-full py-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-extrabold text-xs shadow-lg">
-        ✅ Confirmer mon paiement
+      <div id="payAccountsBox" class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1.5 font-bold text-slate-800"></div>
+      <input id="payRefInput" type="text" placeholder="Référence ou ID de transaction Wave / OM / MTN..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs font-bold">
+      <button onclick="confirmPayment()" class="w-full py-3 rounded-xl bg-emerald-700 text-white font-extrabold text-xs shadow-lg">
+        ✅ Valider mon paiement
       </button>
-    </div>
-  </div>
-
-  <!-- MODAL INSTALLATION APP -->
-  <div id="installModal" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center p-4">
-    <div class="bg-white max-w-md w-full rounded-3xl p-6 space-y-4 text-center">
-      <div class="flex justify-between items-center">
-        <span class="text-xs font-extrabold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">📲 Installer K-TERRA</span>
-        <button onclick="closeInstallModal()" class="text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
-      </div>
-      <img id="publicQrImg" src="" alt="QR Code" class="w-36 h-36 mx-auto rounded-2xl border border-slate-200 p-2">
-      <div class="text-left bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs space-y-2 text-slate-700">
-        <p>🍎 <strong>iPhone (Safari) :</strong> Touchez <strong>Partager</strong> en bas puis <strong>« Sur l'écran d'accueil »</strong>.</p>
-        <p>🤖 <strong>Android (Chrome) :</strong> Touchez les <strong>3 points</strong> en haut puis <strong>« Installer l'application »</strong>.</p>
-      </div>
     </div>
   </div>
 
   <script>
     // =========================================================================
-    // 1. CONNEXION CLOUD SUPABASE
+    // 1. CONNEXION SUPABASE & CONFIGURATION
     // =========================================================================
     const SUPABASE_URL = 'https://dijoncsvfurzybumkiwu.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_AhZdYBe6ZLR0bixIbgt-ag_uf49aTy4';
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const africanMarkets = {
-      CI: {
-        name: "🇨🇮 Côte d'Ivoire",
-        communes: [
-          { key: 'all', label: '🔥 Toute la Côte d\'Ivoire' },
-          { key: 'cocody', label: '🌴 Cocody (Angré / Riviera / 2 Plateaux)' },
-          { key: 'marcory', label: '🏙️ Marcory & Zone 4' },
-          { key: 'yopougon', label: '🎶 Yopougon' },
-          { key: 'bingerville', label: '🏡 Bingerville' },
-          { key: 'portbouet', label: '✈️ Port-Bouët & Koumassi' },
-          { key: 'plateau', label: '🏢 Plateau & Treichville' },
-          { key: 'abobo', label: '🏘️ Abobo, Anyama & Songon' },
-          { key: 'assinie', label: '🌊 Assinie & Grand-Bassam' },
-          { key: 'yamoussoukro', label: '🏛️ Yamoussoukro' },
-          { key: 'bouake', label: '🚆 Bouaké' },
-          { key: 'sanpedro', label: '⚓ San-Pédro & Jacqueville' },
-          { key: 'korhogo', label: '⛰️ Korhogo, Man & Daloa' }
-        ]
-      },
-      SN: { name: "🇸🇳 Sénégal", communes: [{ key: 'all', label: '🔥 Tout le Sénégal' }, { key: 'almadies', label: '🌊 Dakar Almadies / Ngor' }, { key: 'mermoz', label: '🏙️ Mermoz / Saly' }] },
-      GN: { name: "🇬🇳 Guinée", communes: [{ key: 'all', label: '🔥 Toute la Guinée' }, { key: 'kipe', label: '🏙️ Conakry Kipé / Kaloum' }] },
-      BJ: { name: "🇧🇯 Bénin", communes: [{ key: 'all', label: '🔥 Tout le Bénin' }, { key: 'fidjrosse', label: '🌊 Cotonou Fidjrossè / Calavi' }] },
-      TG: { name: "🇹🇬 Togo", communes: [{ key: 'all', label: '🔥 Tout le Togo' }, { key: 'baguida', label: '🌊 Lomé Baguida / Cité OUA' }] },
-      ML: { name: "🇲🇱 Mali", communes: [{ key: 'all', label: '🔥 Tout le Mali' }, { key: 'aci2000', label: '🏢 Bamako ACI 2000' }] },
-      BF: { name: "🇧🇫 Burkina Faso", communes: [{ key: 'all', label: '🔥 Tout le Burkina' }, { key: 'ouaga2000', label: '🏢 Ouaga 2000 / Bobo' }] },
-      CM: { name: "🇨🇲 Cameroun", communes: [{ key: 'all', label: '🔥 Tout le Cameroun' }, { key: 'bonapriso', label: '🏙️ Douala Bonapriso / Yaoundé Bastos' }] },
-      GA: { name: "🇬🇦 Gabon", communes: [{ key: 'all', label: '🔥 Tout le Gabon' }, { key: 'akanda', label: '🌊 Libreville Akanda' }] },
-      CD: { name: "🇨🇩 RD Congo", communes: [{ key: 'all', label: '🔥 Toute la RDC' }, { key: 'gombe', label: '🏢 Kinshasa La Gombe' }] },
-      GH: { name: "🇬🇭 Ghana / Nigeria", communes: [{ key: 'all', label: '🔥 Accra & Lagos' }, { key: 'accra', label: '🇬🇭 East Legon / Lekki' }] },
-      MA: { name: "🇲🇦 Maroc / Rwanda", communes: [{ key: 'all', label: '🔥 Casa & Kigali' }, { key: 'casablanca', label: '🇲🇦 Casablanca / Marrakech' }] }
+    const markets = {
+      CI: [
+        { key: 'all', label: '🔥 Toute la Côte d\'Ivoire' },
+        { key: 'cocody', label: '🌴 Cocody (Angré / Riviera / 2 Plateaux)' },
+        { key: 'marcory', label: '🏙️ Marcory & Zone 4' },
+        { key: 'yopougon', label: '🎶 Yopougon' },
+        { key: 'bingerville', label: '🏡 Bingerville' },
+        { key: 'portbouet', label: '✈️ Port-Bouët & Koumassi' },
+        { key: 'plateau', label: '🏢 Plateau & Treichville' },
+        { key: 'abobo', label: '🏘️ Abobo, Anyama & Songon' },
+        { key: 'assinie', label: '🌊 Assinie & Grand-Bassam' },
+        { key: 'yamoussoukro', label: '🏛️ Yamoussoukro' },
+        { key: 'bouake', label: '🚆 Bouaké' },
+        { key: 'sanpedro', label: '⚓ San-Pédro' },
+        { key: 'korhogo', label: '⛰️ Korhogo & Man' }
+      ],
+      SN: [{ key: 'all', label: '🔥 Tout le Sénégal' }, { key: 'almadies', label: '🌊 Dakar Almadies / Ngor' }, { key: 'saly', label: '🌴 Mermoz / Saly' }],
+      GN: [{ key: 'all', label: '🔥 Toute la Guinée' }, { key: 'kipe', label: '🏙️ Conakry Kipé / Kaloum' }],
+      BJ: [{ key: 'all', label: '🔥 Tout le Bénin' }, { key: 'fidjrosse', label: '🌊 Cotonou Fidjrossè' }],
+      TG: [{ key: 'all', label: '🔥 Tout le Togo' }, { key: 'baguida', label: '🌊 Lomé Baguida' }],
+      ML: [{ key: 'all', label: '🔥 Tout le Mali' }, { key: 'aci2000', label: '🏢 Bamako ACI 2000' }],
+      BF: [{ key: 'all', label: '🔥 Tout le Burkina' }, { key: 'ouaga2000', label: '🏢 Ouaga 2000' }],
+      CM: [{ key: 'all', label: '🔥 Tout le Cameroun' }, { key: 'bonapriso', label: '🏙️ Douala / Yaoundé' }],
+      GA: [{ key: 'all', label: '🔥 Tout le Gabon' }, { key: 'akanda', label: '🌊 Libreville Akanda' }],
+      CD: [{ key: 'all', label: '🔥 Toute la RDC' }, { key: 'gombe', label: '🏢 Kinshasa Gombe' }]
     };
 
-    const defaultCatalog = [
-      // RÉSIDENCES (Commission 15% + Garantie Pass Échange)
+    const initialCatalog = [
+      // UNIVERS 1 : RÉSIDENCES MEUBLÉES
       {
-        id: 401, country: 'CI', domain: 'residence', cat: 'cocody', vendor: 'Résidences Akwaba Cocody',
+        id: 701, country: 'CI', universe: 'residence', cat: 'cocody', vendor: 'Résidences Akwaba Cocody',
         title: 'Appartement 2 Pièces Haut Standing — Angré 8e Tranche',
         location: 'Cocody, Angré 8e Tranche (Carrefour Prière • À 50m du goudron)', price_xof: 35000,
-        legal: '🛡️ Gérant Vérifié CNI', secondBadge: '⚡ Groupe + 💧 Suppresseur',
+        power: '⚡ Groupe Électrogène + 💧 Suppresseur',
         details: 'Wi-Fi Fibre Illimité • Netflix & Canal+ • Clim Split • Cuisine équipée • Gardien 24h/24',
         lat: 5.3984, lng: -3.9872, img: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=900&q=80'
       },
       {
-        id: 402, country: 'CI', domain: 'residence', cat: 'marcory', vendor: 'Zone 4 Luxury Suites',
-        title: 'Studio & Loft Américain Piscine Rooftop — Zone 4C',
-        location: 'Marcory, Zone 4 (Rue Paul Langevin • Goudron devant l\'immeuble)', price_xof: 45000,
-        legal: '🛡️ Gérant Vérifié CNI', secondBadge: '⚡ Groupe 24/7 + 💧 Eau 24/7',
+        id: 702, country: 'CI', universe: 'residence', cat: 'marcory', vendor: 'Zone 4 Luxury Suites',
+        title: 'Loft Américain Piscine Rooftop — Marcory Zone 4C',
+        location: 'Marcory, Zone 4 (Rue Paul Langevin • Bitume devant l\'immeuble)', price_xof: 45000,
+        power: '⚡ Groupe 24/7 + 💧 Eau 24/7',
         details: 'Piscine sur le toit • Ascenseur • Salle de sport • À 2 min des restaurants de Zone 4',
         lat: 5.2945, lng: -3.9820, img: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=900&q=80'
       },
       {
-        id: 403, country: 'CI', domain: 'residence', cat: 'yopougon', vendor: 'Yopougon Confort Séjour',
-        title: 'Résidence Chic 2 Pièces — Yopougon Niangon / Maroc',
+        id: 703, country: 'CI', universe: 'residence', cat: 'yopougon', vendor: 'Yopougon Confort Séjour',
+        title: 'Studio & 2 Pièces Chic — Yopougon Niangon / Maroc',
         location: 'Yopougon, Maroc Carrefour Obiang (À 100m du goudron)', price_xof: 20000,
-        legal: '🛡️ Gérant Vérifié CNI', secondBadge: '💧 Réserve d\'eau + ❄️ Clim',
-        details: 'Propre, calme et sécurisé • Canal+ • Eau chaude • Parking intérieur fermé',
+        power: '💧 Réserve d\'eau + ❄️ Clim',
+        details: 'Calme, discret et sécurisé • Canal+ • Eau chaude • Parking intérieur fermé',
         lat: 5.3360, lng: -4.0750, img: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=900&q=80'
       },
       {
-        id: 404, country: 'CI', domain: 'residence', cat: 'assinie', vendor: 'Assinie Prestige Plage',
+        id: 704, country: 'CI', universe: 'residence', cat: 'assinie', vendor: 'Assinie Prestige Plage',
         title: 'Villa Résidence Piscine Bord de Lagune — Assinie KM 12',
         location: 'Assinie Mafia KM 12 / Grand-Bassam (Accès bitumé)', price_xof: 115000,
-        legal: '🛡️ Résidence VIP Vérifiée', secondBadge: '⚡ Groupe + 💧 Forage',
+        power: '⚡ Groupe + 💧 Forage',
         details: 'Piscine à débordement • Accès plage & lagune • 4 Chambres climatisées • Barbecue',
         lat: 5.1380, lng: -3.2920, img: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=900&q=80'
       },
 
-      // TERRAINS (Visibilité payée par Mois par le vendeur !)
+      // UNIVERS 2 : TERRAINS CADASTRÉS (ZÉRO NUITÉE ! Superficie m², Lot/Îlot, ACD)
       {
-        id: 501, country: 'CI', domain: 'terrain', cat: 'bingerville', vendor: 'Ivoire Foncier Certifié',
-        title: 'Terrain Plat 600 m² Clôturé — Bingerville Cité Marina',
-        location: 'Bingerville, Route d\'Abatta (Lot 142, Îlot 18 • Voie bitumée)', price_xof: 18000000,
-        area_m2: 600, legal: '🛡️ ACD Signé & Vérifié', secondBadge: '📐 600 m² • 4 Bornes GPS',
-        details: 'Terrain plat prêt à bâtir • Lot 142 Îlot 18 • Eau & Électricité sur site • Zéro litige',
+        id: 801, country: 'CI', universe: 'terrain', cat: 'bingerville', vendor: 'Ivoire Foncier Certifié',
+        title: 'Terrain Plat Cadastré 600 m² — Bingerville Cité Marina',
+        location: 'Bingerville, Route d\'Abatta (Voie bitumée • Poteaux CIE sur site)', price_xof: 18000000,
+        area_m2: 600, lot: 'Lot 142 • Îlot 18', doc: 'ACD Signé & Vérifié',
+        details: 'Terrain plat prêt à bâtir • 4 Bornes GPS certifiées sans chevauchement • Vente devant Notaire',
         lat: 5.3585, lng: -3.8895, img: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80'
       },
       {
-        id: 502, country: 'CI', domain: 'terrain', cat: 'cocody', vendor: 'Ivoire Foncier Certifié',
-        title: 'Lot Résidentiel 500 m² — Cocody Angré Extension / Djorogobité',
-        location: 'Cocody, Djorogobité 2 (Lot 88, Îlot 9 • À 200m du goudron)', price_xof: 25000000,
-        area_m2: 500, legal: '🛡️ ACD Individuel Vérifié', secondBadge: '📐 500 m² • 4 Bornes GPS',
-        details: 'Quartier résidentiel habité • Extrait topographique et 4 bornes cadastrales vérifiés devant Notaire',
+        id: 802, country: 'CI', universe: 'terrain', cat: 'cocody', vendor: 'Ivoire Foncier Certifié',
+        title: 'Lot Résidentiel 500 m² — Cocody Angré Djorogobité 2',
+        location: 'Cocody, Angré Extension Djorogobité (À 200m du bitume)', price_xof: 25000000,
+        area_m2: 500, lot: 'Lot 88 • Îlot 09', doc: 'ACD Individuel Vérifié',
+        details: 'Zone habitée haut standing • Extrait topographique et dossier technique complets',
         lat: 5.4120, lng: -3.9650, img: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80'
       },
-
-      // MAISONS & VILLAS (Visibilité payée par Mois par le vendeur !)
       {
-        id: 601, country: 'CI', domain: 'maison', cat: 'cocody', vendor: 'Bâtisseurs Prestige CI',
-        title: 'Villa Duplex Moderne 5 Pièces + Piscine (Vente Clé en Main)',
+        id: 803, country: 'CI', universe: 'terrain', cat: 'yamoussoukro', vendor: 'Ivoire Foncier Certifié',
+        title: 'Terrain Commercial 800 m² — Yamoussoukro Millionnaire',
+        location: 'Yamoussoukro, Quartier Millionnaire (Bordure de goudron)', price_xof: 12000000,
+        area_m2: 800, lot: 'Lot 12 • Îlot 04', doc: 'Titre Foncier (TF)',
+        details: 'Parfait pour hôtel, résidence ou villa familiale • Paiement comptant ou échéancier 12 mois',
+        lat: 6.8276, lng: -5.2893, img: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80'
+      },
+
+      // UNIVERS 3 : MAISONS & VILLAS À VENDRE
+      {
+        id: 901, country: 'CI', universe: 'maison', cat: 'cocody', vendor: 'Bâtisseurs Prestige CI',
+        title: 'Villa Duplex Moderne 5 Pièces + Piscine (Clé en Main)',
         location: 'Cocody, Riviera Palmeraie / Angré 9e Tranche (Cité Sécurisée)', price_xof: 65000000,
-        area_m2: 450, rooms: 'Villa Duplex 5 Pièces', legal: '🛡️ ACD + Certificat Propriété', secondBadge: '🏠 Duplex 5P • 450 m²',
-        details: '4 Chambres autonomes + Salon + Piscine + Garage • Visite 3D avec toit amovible',
+        area_m2: 450, rooms: 'Duplex 5 Pièces (4 Chambres autonomes)', doc: 'ACD + Certificat Propriété',
+        details: 'Livrée finie avec piscine, cuisine équipée et garage 2 voitures • Visite 3D avec toit amovible',
         lat: 5.3984, lng: -3.9872, img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=900&q=80'
       },
       {
-        id: 602, country: 'CI', domain: 'maison', cat: 'bingerville', vendor: 'Bâtisseurs Prestige CI',
+        id: 902, country: 'CI', universe: 'maison', cat: 'bingerville', vendor: 'Bâtisseurs Prestige CI',
         title: 'Villa Basse Contemporaine 4 Pièces — Cité Bingerville',
-        location: 'Bingerville, Feh Kessé (Cité bitumée avec sécurité)', price_xof: 42000000,
-        area_m2: 350, rooms: 'Villa Basse 4 Pièces', legal: '🛡️ ACD Global & Individuel', secondBadge: '🏠 Villa 4P • 350 m²',
-        details: 'Livrée finie clé en main • 3 Chambres autonomes • Jardin • Échéancier promoteur accepté',
+        location: 'Bingerville, Feh Kessé (Cité bitumée sécurisée 24h/24)', price_xof: 42000000,
+        area_m2: 350, rooms: 'Villa Basse 4 Pièces', doc: 'ACD Global & Individuel',
+        details: '3 Chambres autonomes + Grand salon + Jardin • Échéancier promoteur disponible (Apport 30%)',
         lat: 5.3585, lng: -3.8895, img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80'
       }
     ];
 
-    let items = [...defaultCatalog];
-    let agencies = [
-      { id: 1, name: 'Résidences Akwaba Cocody', active: true },
-      { id: 2, name: 'Ivoire Foncier Certifié', active: true },
-      { id: 3, name: 'Bâtisseurs Prestige CI', active: true }
+    let catalog = [...initialCatalog];
+    let vendors = [
+      { id: 1, name: 'Résidences Akwaba Cocody', role: '🔑 Résidences (Commission 15%)', active: true },
+      { id: 2, name: 'Ivoire Foncier Certifié', role: '🛰️ Terrains (Abonné 50 000 FCFA/mois)', active: true },
+      { id: 3, name: 'Bâtisseurs Prestige CI', role: '🏛️ Villas (Abonné 75 000 FCFA/mois)', active: true }
     ];
 
-    let bookingsLedger = JSON.parse(localStorage.getItem('kterra_bookings_v3') || JSON.stringify([
-      { id: 1, title: '[Avance 15% Résidence] Appart 2P — Cocody Angré', client: '+225 07 48 92 14', commission: 10500, ref: 'WAVE-884920', pass: 'PASS-KT-4910' },
-      { id: 2, title: '[Abonnement Mensuel Terrains] Ivoire Foncier Certifié', client: 'Ivoire Foncier', commission: 50000, ref: 'OM-774120', pass: 'MOIS-ACTIF 🟢' },
-      { id: 3, title: '[Abonnement Mensuel Villas] Bâtisseurs Prestige CI', client: 'Bâtisseurs Prestige', commission: 75000, ref: 'WAVE-663190', pass: 'MOIS-ACTIF 🟢' }
+    let ledger = JSON.parse(localStorage.getItem('kterra_v5_ledger') || JSON.stringify([
+      { id: 1, type: '🔑 Avance 15% Résidence', client: '+225 07 48 92 14', amount: 10500, ref: 'WAVE-8849', pass: 'PASS-KT-4910 (Actif)' },
+      { id: 2, type: '🛰️ Abonnement Mois Terrains', client: 'Ivoire Foncier Certifié', amount: 50000, ref: 'OM-7741', pass: 'MOIS PAYÉ 🟢' },
+      { id: 3, type: '🏛️ Abonnement Mois Villas', client: 'Bâtisseurs Prestige CI', amount: 75000, ref: 'WAVE-6631', pass: 'MOIS PAYÉ 🟢' }
     ]));
 
-    let execConfig = JSON.parse(localStorage.getItem('kterra_exec_cfg') || JSON.stringify({
+    let morataCfg = JSON.parse(localStorage.getItem('kterra_v5_cfg') || JSON.stringify({
       wave: '+225 07 00 00 00 00 (Wave K-TERRA)',
       om: '+225 07 00 00 00 00 (Orange Money K-TERRA)',
       mtn: '+225 05 00 00 00 00 (MTN K-TERRA)',
-      bni: 'Compte / Visa BNI K-TERRA',
-      commPct: 15,
-      monthlySub: 50000
+      bni: 'Compte / Visa BNI K-TERRA'
     }));
 
     const rates = { XOF:{f:1,s:'FCFA'}, EUR:{f:0.001524,s:'€'}, USD:{f:0.00166,s:'$'} };
-    let curCountry = 'CI', curCommune = 'all', curDomain = 'residence', curCurrency = 'XOF';
-    let curVendorFormType = 'residence';
-    let currentVendorFilter = '';
-    let lastCreatedVendorName = '';
-    let activeItem = items[0];
-    let currentPaymentMode = 'residence'; // 'residence' ou 'vendor_sub'
-    let uploadedPhotoDataUrl = '';
+    let curUniverse = 'residence', curCountry = 'CI', curCommune = 'all', curCurrency = 'XOF';
+    let curStudioRole = 'residence', activeStoreFilter = '', myLastStoreName = '';
+    let selectedItem = catalog[0], pendingPaymentMode = 'residence', pendingPaymentAmount = 0;
+    let uploadedPhotoBase64 = '';
 
-    // =========================================================================
-    // 2. PASSAGES SECRETS DE MORATA (INVISIBLES DU PUBLIC)
-    // =========================================================================
-    let logoTapCount = 0, logoTapTimer = null;
-    function handleLogoTap() {
-      showSection('home');
-      logoTapCount++;
-      clearTimeout(logoTapTimer);
-      if (logoTapCount >= 5) {
-        logoTapCount = 0;
-        const code = prompt('👑 Accès Propriétaire — Entrez votre code secret :');
-        if (code && (code.trim().toUpperCase() === 'MORATA' || code.trim().toUpperCase() === 'MORATA2026')) {
-          openSecretExecutiveWorld();
-        }
-      } else {
-        logoTapTimer = setTimeout(() => { logoTapCount = 0; }, 1800);
-      }
-    }
+    // Dates par défaut pour le calendrier Airbnb
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date();
+      const twoDays = new Date(Date.now() + 86400000 * 2);
+      document.getElementById('resCheckIn').value = today.toISOString().split('T')[0];
+      document.getElementById('resCheckOut').value = twoDays.toISOString().split('T')[0];
+      renderCommunes();
+      populateStudioCommunes();
+      renderAllUniverses();
+      syncFromSupabase();
+    });
 
-    function handleSearchOrSecret() {
-      const val = document.getElementById('searchInput').value.trim();
-      if (val.toUpperCase() === 'MORATA2026' || val.toUpperCase() === 'MORATAADMIN') {
-        document.getElementById('searchInput').value = '';
-        openSecretExecutiveWorld();
-        return;
-      }
-      renderProperties();
-    }
-
-    function openSecretExecutiveWorld() {
-      document.getElementById('clientWorld').classList.add('hidden');
-      document.getElementById('ownerWorld').classList.remove('hidden');
-      updateExecutiveDashboardUI();
-    }
-
-    function exitOwnerWorld() {
-      document.getElementById('ownerWorld').classList.add('hidden');
-      document.getElementById('clientWorld').classList.remove('hidden');
-      renderProperties();
-    }
-
-    // =========================================================================
-    // 3. CHARGEMENT SUPABASE & FILTRAGE DES VENDEURS QUI N'ONT PAS PAYÉ LE MOIS
-    // =========================================================================
-    async function loadFromSupabase() {
+    async function syncFromSupabase() {
       try {
-        const { data: propData } = await sb.from('properties').select('*').order('id', { ascending: false });
-        if (propData && propData.length > 0) {
-          const mapped = propData.map(p => {
-            let dom = 'residence';
-            if ((p.title || '').toLowerCase().includes('terrain') || (p.details || '').toLowerCase().includes('lot ')) dom = 'terrain';
-            else if (p.price_xof >= 5000000) dom = 'maison';
+        const { data: rows } = await sb.from('properties').select('*').order('id', { ascending: false });
+        if (rows && rows.length > 0) {
+          // On ne garde que les annonces créées avec un tag V5 pour éviter les vieilles annonces test de la Leçon 3
+          const v5Rows = rows.filter(r => (r.legal || '').includes('V5:')).map(r => {
+            const parts = r.legal.split('|');
+            const univ = parts[0].replace('V5:', '') || 'residence';
             return {
-              ...p,
-              country: 'CI',
-              domain: dom,
-              vendor: p.vendor || 'Partenaire K-TERRA',
-              area_m2: p.area_m2 || 500,
-              rooms: p.rooms || 'Villa 4 Pièces',
-              secondBadge: dom === 'terrain' ? '📐 Terrain Cadré GPS' : (dom === 'maison' ? '🏠 Visite 3D Active' : '⚡💧 Eau & Courant OK')
+              ...r,
+              universe: univ,
+              vendor: parts[1] || 'Partenaire K-TERRA',
+              area_m2: parseInt(parts[2], 10) || 600,
+              lot: parts[3] || 'Lot Cadastré',
+              doc: parts[4] || 'ACD Vérifié',
+              rooms: parts[3] || 'Villa Duplex 5 Pièces',
+              power: parts[2] || '⚡💧 Eau & Courant OK'
             };
           });
-          items = [...mapped, ...defaultCatalog];
+          catalog = [...v5Rows, ...initialCatalog];
+          renderAllUniverses();
         }
-        const { data: agData } = await sb.from('agencies').select('*').order('id', { ascending: true });
-        if (agData && agData.length > 0) agencies = agData;
-
-        const { data: setData } = await sb.from('owner_settings').select('*').eq('id', 1).single();
-        if (setData && setData.payment_numbers) {
-          try { execConfig = { ...execConfig, ...JSON.parse(setData.payment_numbers) }; } catch (e) {}
-        }
-      } catch (err) {}
-      renderCommunesBar();
-      populateVendorCommunes();
-      renderProperties();
+      } catch (e) {}
     }
 
-    function formatMoney(xof) {
+    function fmt(xof) {
       const r = rates[curCurrency] || rates.XOF;
-      return Math.round((xof || 25000) * r.f).toLocaleString('fr-FR') + ' ' + r.s;
+      return Math.round((xof || 0) * r.f).toLocaleString('fr-FR') + ' ' + r.s;
     }
 
-    function isVendorActive(vendorName) {
-      if (!vendorName) return true;
-      const found = agencies.find(a => a.name.toLowerCase().includes(vendorName.toLowerCase()) || vendorName.toLowerCase().includes(a.name.toLowerCase()));
-      return found ? found.active !== false : true;
+    function isVendorVisible(vendorName) {
+      const v = vendors.find(x => x.name.toLowerCase() === (vendorName || '').toLowerCase());
+      return v ? v.active : true;
     }
 
-    function setDomain(dom) {
-      curDomain = dom;
-      ['residence', 'terrain', 'maison'].forEach(d => {
-        const btn = document.getElementById('domBtn-' + d);
-        if (btn) {
-          btn.className = d === dom
-            ? 'px-4 py-2 rounded-full bg-emerald-700 text-white text-xs font-extrabold shadow-sm'
-            : 'px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-extrabold';
-        }
+    // =========================================================================
+    // 2. BASCULEMENT VISUEL RADICAL ENTRE LES 4 UNIVERS
+    // =========================================================================
+    function switchUniverse(u) {
+      curUniverse = u;
+      ['residence', 'terrain', 'maison', 'studio'].forEach(k => {
+        document.getElementById('universe-' + k).classList.toggle('hidden', k !== u);
       });
+      document.getElementById('publicSearchAndCommunes').classList.toggle('hidden', u === 'studio');
 
-      const badge = document.getElementById('domainBadgeText');
-      const title = document.getElementById('domainTitleText');
-      const desc = document.getElementById('domainDescText');
-      if (dom === 'residence') {
-        badge.textContent = '🔑 ESPACE 1 : RÉSIDENCES MEUBLÉES PAR COMMUNE';
-        title.textContent = 'Réservez votre résidence par nuit • Garantie Pass Échange Gratuit !';
-        desc.textContent = 'Bloquez vos clés avec 15% d\'avance (Wave/OM). Si la résidence ne correspond pas aux photos en arrivant, votre Pass vous reloge immédiatement dans une autre résidence sans repayer.';
-      } else if (dom === 'terrain') {
-        badge.textContent = '🛰️ ESPACE 2 : TERRAINS CERTIFIÉS (VENDEURS ABONNÉS AU MOIS)';
-        title.textContent = 'Achetez votre terrain en m² • 4 Bornes GPS sur Satellite & Vérification ACD/TF';
-        desc.textContent = 'Seuls les lotisseurs à jour de leur abonnement mensuel K-TERRA sont visibles ici. Demandez votre visite gratuitement.';
-      } else {
-        badge.textContent = '🏡 ESPACE 3 : MAISONS & VILLAS (VENDEURS ABONNÉS AU MOIS)';
-        title.textContent = 'Visitez votre future Villa en 3D (Toit Amovible) avant de vous déplacer';
-        desc.textContent = 'Inspectez le nombre de pièces en 3D, vérifiez l\'ACD et planifiez votre visite physique gratuitement.';
-      }
-      renderProperties();
+      const labels = {
+        residence: { txt: 'Univers 1 : Résidences Meublées (Style Airbnb)', col: 'text-rose-600' },
+        terrain: { txt: 'Univers 2 : Cadastre & Terrains en m² (4 Bornes GPS)', col: 'text-amber-600' },
+        maison: { txt: 'Univers 3 : Villas & Maisons Clé en Main (Visite 3D)', col: 'text-blue-700' },
+        studio: { txt: 'Univers 4 : Studio Créateur de Page & Abonnements', col: 'text-emerald-700' }
+      };
+      const lbl = document.getElementById('activeUniverseLabel');
+      lbl.textContent = labels[u].txt;
+      lbl.className = 'block text-[11px] font-extrabold ' + labels[u].col;
+
+      // Couleurs distinctes des onglets
+      document.getElementById('uTab-residence').className = u === 'residence' ? 'px-3.5 py-2 rounded-xl bg-rose-600 text-white text-xs font-extrabold shadow' : 'px-3.5 py-2 rounded-xl text-slate-700 hover:bg-white text-xs font-extrabold';
+      document.getElementById('uTab-terrain').className = u === 'terrain' ? 'px-3.5 py-2 rounded-xl bg-slate-950 text-amber-400 text-xs font-extrabold shadow' : 'px-3.5 py-2 rounded-xl text-slate-700 hover:bg-white text-xs font-extrabold';
+      document.getElementById('uTab-maison').className = u === 'maison' ? 'px-3.5 py-2 rounded-xl bg-blue-900 text-white text-xs font-extrabold shadow' : 'px-3.5 py-2 rounded-xl text-slate-700 hover:bg-white text-xs font-extrabold';
+      document.getElementById('uTab-studio').className = u === 'studio' ? 'px-3.5 py-2 rounded-xl bg-emerald-700 text-white text-xs font-extrabold shadow' : 'px-3.5 py-2 rounded-xl bg-amber-400 text-black text-xs font-extrabold';
+
+      renderAllUniverses();
     }
 
     function changeCountry() {
       curCountry = document.getElementById('countrySelect').value;
       curCommune = 'all';
-      renderCommunesBar();
-      renderProperties();
+      renderCommunes();
+      renderAllUniverses();
     }
 
-    function renderCommunesBar() {
-      const market = africanMarkets[curCountry] || africanMarkets.CI;
-      document.getElementById('communesBar').innerHTML = market.communes.map(c => `
-        <button onclick="setCommune('${c.key}')" class="shrink-0 px-3.5 py-1.5 rounded-2xl text-xs font-extrabold transition ${curCommune === c.key ? 'bg-emerald-700 text-white shadow' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}">
+    function changeCurrency() {
+      curCurrency = document.getElementById('currencySelect').value;
+      renderAllUniverses();
+    }
+
+    function renderCommunes() {
+      const list = markets[curCountry] || markets.CI;
+      document.getElementById('communesBar').innerHTML = list.map(c => `
+        <button onclick="selectCommune('${c.key}')" class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-extrabold transition ${curCommune === c.key ? 'bg-slate-900 text-white shadow' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'}">
           ${c.label}
         </button>
       `).join('');
     }
 
-    function setCommune(key) {
-      curCommune = key;
-      renderCommunesBar();
-      renderProperties();
+    function selectCommune(k) {
+      curCommune = k;
+      renderCommunes();
+      renderAllUniverses();
     }
 
-    function renderProperties() {
-      const q = document.getElementById('searchInput').value.toLowerCase();
-      const grid = document.getElementById('propertiesGrid');
-
-      const filtered = items.filter(i => {
-        // Si le vendeur n'a pas payé son mois (BLOQUÉ 🔴 par Morata), ses biens sont cachés !
-        if (!isVendorActive(i.vendor)) return false;
-        const matchDom = (i.domain || 'residence') === curDomain;
-        const matchCom = curCommune === 'all' || i.cat === curCommune;
-        const matchVendor = !currentVendorFilter || (i.vendor || '') === currentVendorFilter;
-        const blob = ((i.title || '') + ' ' + (i.location || '') + ' ' + (i.details || '') + ' ' + (i.vendor || '')).toLowerCase();
-        return matchDom && matchCom && matchVendor && blob.includes(q);
+    // =========================================================================
+    // 3. RENDU SUR-MESURE : CARTES AIRBNB vs FICHES CADASTRE TERRAINS vs VILLAS
+    // =========================================================================
+    function filterCatalog(univ) {
+      const q = (document.getElementById('globalSearchInput').value || '').toLowerCase();
+      return catalog.filter(it => {
+        if (it.universe !== univ) return false;
+        if (!isVendorVisible(it.vendor)) return false;
+        if (curCommune !== 'all' && it.cat !== curCommune) return false;
+        if (activeStoreFilter && it.vendor !== activeStoreFilter) return false;
+        const blob = (it.title + ' ' + it.location + ' ' + it.details + ' ' + (it.vendor || '')).toLowerCase();
+        return blob.includes(q);
       });
+    }
 
-      grid.innerHTML = filtered.map(it => {
-        const priceSuffix = it.domain === 'residence' ? ' / nuit' : (it.domain === 'terrain' ? ` (${it.area_m2 || 500} m²)` : ' (Prix Vente)');
-        const actionLabel = it.domain === 'residence' ? '🔑 Réserver →' : (it.domain === 'terrain' ? '🛰️ 4 Bornes & ACD →' : '🏠 Visiter en 3D →');
-
-        return `
-          <div onclick="openPropertyModal(${it.id})" class="bg-white rounded-3xl overflow-hidden k-shadow border border-slate-100 cursor-pointer hover:-translate-y-1 transition duration-200 flex flex-col justify-between group">
+    function renderAllUniverses() {
+      // 1. Rendu des Résidences (Style Airbnb)
+      const resList = filterCatalog('residence');
+      document.getElementById('grid-residence').innerHTML = resList.map(it => `
+        <div onclick="openItemModal(${it.id})" class="bg-white rounded-3xl overflow-hidden airbnb-card border border-slate-100 cursor-pointer hover:-translate-y-1 transition flex flex-col justify-between group">
+          <div>
+            <div class="relative h-56 overflow-hidden">
+              <img src="${it.img}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+              <span class="absolute top-3 left-3 bg-white/95 text-rose-600 text-[10px] font-extrabold px-2.5 py-1 rounded-full shadow">
+                🔑 ${it.vendor || 'Résidence Vérifiée'}
+              </span>
+              <span class="absolute bottom-3 left-3 bg-slate-950/90 text-emerald-300 text-[10px] font-extrabold px-2.5 py-1 rounded-lg">
+                ${it.power || '⚡💧 Eau & Courant OK'}
+              </span>
+            </div>
+            <div class="p-4 space-y-1">
+              <p class="text-xs font-extrabold text-rose-600">📍 ${it.location}</p>
+              <h3 class="font-extrabold text-sm text-slate-900 line-clamp-1">${it.title}</h3>
+              <p class="text-[11px] text-slate-500 line-clamp-2">${it.details}</p>
+            </div>
+          </div>
+          <div class="px-4 pb-4 pt-2 border-t border-slate-100 flex items-baseline justify-between">
             <div>
-              <div class="relative h-52 overflow-hidden">
-                <img src="${it.img}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                <span class="absolute top-3 left-3 bg-white/95 text-slate-900 text-[10px] font-extrabold px-2.5 py-1 rounded-full shadow">
-                  ${it.legal}
+              <span class="text-base font-extrabold text-slate-950">${fmt(it.price_xof)}</span>
+              <span class="text-xs font-bold text-slate-500"> / nuit</span>
+            </div>
+            <span class="text-xs font-extrabold text-rose-600">Réserver →</span>
+          </div>
+        </div>
+      `).join('');
+
+      // 2. Rendu des Terrains (Style Cadastre Sombre & Or — ZÉRO NUITÉE !)
+      const terList = filterCatalog('terrain');
+      document.getElementById('grid-terrain').innerHTML = terList.map(it => {
+        const m2Price = Math.round(it.price_xof / (it.area_m2 || 600));
+        return `
+          <div onclick="openItemModal(${it.id})" class="cadastre-card rounded-3xl overflow-hidden cursor-pointer hover:-translate-y-1 transition flex flex-col justify-between shadow-xl">
+            <div>
+              <div class="relative h-48">
+                <img src="${it.img}" class="w-full h-full object-cover opacity-85">
+                <span class="absolute top-3 left-3 bg-amber-400 text-black text-[10px] font-extrabold px-3 py-1 rounded-full">
+                  🛡️ ${it.doc || 'ACD Vérifié'}
                 </span>
-                <span class="absolute bottom-3 left-3 bg-emerald-950/90 text-amber-300 text-[10px] font-extrabold px-2.5 py-1 rounded-lg">
-                  ${it.secondBadge || ''}
+                <span class="absolute bottom-3 right-3 bg-slate-950/95 text-amber-300 border border-amber-400/40 text-xs font-extrabold px-3 py-1 rounded-xl">
+                  📐 ${it.area_m2 || 600} m² Certifiés
                 </span>
               </div>
-              <div class="p-4 space-y-1.5">
-                <span class="text-[11px] font-extrabold text-emerald-700">📍 ${it.location.split('(')[0]}</span>
-                <h3 class="font-extrabold text-sm text-slate-900 line-clamp-1">${it.title}</h3>
-                <p class="text-[11px] text-slate-500 line-clamp-2">${it.details || ''}</p>
+              <div class="p-5 space-y-3">
+                <div>
+                  <span class="text-[11px] font-bold text-amber-400 uppercase">${it.lot || 'Lot Cadastré'} • ${it.vendor}</span>
+                  <h3 class="font-extrabold text-base text-white mt-0.5">${it.title}</h3>
+                  <p class="text-xs text-slate-300 mt-1">📍 ${it.location}</p>
+                </div>
+                <div class="grid grid-cols-2 gap-2 bg-slate-900 p-3 rounded-2xl border border-slate-800 text-xs">
+                  <div>
+                    <span class="text-slate-400 block text-[10px]">Superficie</span>
+                    <span class="font-extrabold text-white">${it.area_m2 || 600} m²</span>
+                  </div>
+                  <div>
+                    <span class="text-slate-400 block text-[10px]">Prix au m²</span>
+                    <span class="font-extrabold text-emerald-400">${fmt(m2Price)} / m²</span>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="px-4 pb-4 pt-2 border-t border-slate-100 flex items-baseline justify-between">
+            <div class="px-5 pb-5 pt-3 border-t border-slate-800 flex items-center justify-between">
               <div>
-                <span class="text-base font-extrabold text-slate-900">${formatMoney(it.price_xof)}</span>
-                <span class="text-[11px] text-slate-500 font-bold">${priceSuffix}</span>
+                <span class="text-[10px] text-slate-400 block">Prix Total du Lot</span>
+                <span class="text-lg font-extrabold text-amber-400">${fmt(it.price_xof)}</span>
               </div>
-              <span class="text-xs font-extrabold text-emerald-700">${actionLabel}</span>
+              <span class="px-3.5 py-2 rounded-xl bg-amber-400 text-black text-xs font-extrabold">🛰️ 4 Bornes & ACD →</span>
             </div>
           </div>
         `;
       }).join('');
-    }
 
-    function changeCurrency() { curCurrency = document.getElementById('currencySelect').value; renderProperties(); }
-
-    function showSection(s) {
-      document.getElementById('section-home').classList.toggle('hidden', s !== 'home');
-      document.getElementById('section-vendor').classList.toggle('hidden', s !== 'vendor');
-      document.getElementById('clientFiltersHeader').classList.toggle('hidden', s !== 'home');
-      document.getElementById('communesBar').classList.toggle('hidden', s !== 'home');
-
-      document.getElementById('topRoleClient').className = s === 'home'
-        ? 'px-4 py-2 rounded-xl bg-emerald-700 text-white text-xs font-extrabold transition shadow-sm'
-        : 'px-4 py-2 rounded-xl text-slate-700 hover:text-slate-900 text-xs font-extrabold transition';
-      document.getElementById('topRoleVendor').className = s === 'vendor'
-        ? 'px-4 py-2 rounded-xl bg-emerald-700 text-white text-xs font-extrabold transition shadow-sm'
-        : 'px-4 py-2 rounded-xl text-slate-700 hover:text-slate-900 text-xs font-extrabold transition';
+      // 3. Rendu des Maisons & Villas (Style Architecte 3D — ZÉRO NUITÉE !)
+      const maiList = filterCatalog('maison');
+      document.getElementById('grid-maison').innerHTML = maiList.map(it => `
+        <div onclick="openItemModal(${it.id})" class="bg-white rounded-3xl overflow-hidden airbnb-card border-2 border-blue-100 cursor-pointer hover:-translate-y-1 transition flex flex-col justify-between">
+          <div>
+            <div class="relative h-52">
+              <img src="${it.img}" class="w-full h-full object-cover">
+              <span class="absolute top-3 left-3 bg-blue-950 text-sky-300 text-[10px] font-extrabold px-3 py-1 rounded-full">
+                🏛️ ${it.doc || 'ACD & Propriété'}
+              </span>
+              <span class="absolute bottom-3 left-3 bg-white/95 text-slate-900 text-[11px] font-extrabold px-3 py-1 rounded-xl shadow">
+                🏠 ${it.rooms || 'Villa Duplex 5P'} • ${it.area_m2 || 450} m²
+              </span>
+            </div>
+            <div class="p-5 space-y-2">
+              <p class="text-xs font-extrabold text-blue-700">📍 ${it.location}</p>
+              <h3 class="font-extrabold text-base text-slate-900">${it.title}</h3>
+              <p class="text-xs text-slate-500">${it.details}</p>
+            </div>
+          </div>
+          <div class="px-5 pb-5 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] text-slate-400 block font-bold uppercase">Prix de Vente Clé en Main</span>
+              <span class="text-lg font-extrabold text-slate-950">${fmt(it.price_xof)}</span>
+            </div>
+            <span class="px-3.5 py-2 rounded-xl bg-blue-950 text-white text-xs font-extrabold">🏠 Visiter en 3D →</span>
+          </div>
+        </div>
+      `).join('');
     }
 
     // =========================================================================
-    // 4. ESPACE VENDEUR & PAIEMENT DE L'ABONNEMENT MENSUEL (TERRAINS / MAISONS)
+    // 4. STUDIO CRÉATEUR DE PAGE VENDEUR & FORMULAIRE DYNAMIQUE
     // =========================================================================
-    function populateVendorCommunes() {
-      const c = document.getElementById('vCountry').value;
-      const market = africanMarkets[c] || africanMarkets.CI;
-      document.getElementById('vCommune').innerHTML = market.communes.filter(x => x.key !== 'all').map(x => `<option value="${x.key}">${x.label}</option>`).join('');
+    function populateStudioCommunes() {
+      const c = document.getElementById('stCountry').value;
+      const list = (markets[c] || markets.CI).filter(x => x.key !== 'all');
+      document.getElementById('stCommune').innerHTML = list.map(x => `<option value="${x.key}">${x.label}</option>`).join('');
     }
 
-    function setVendorFormType(type) {
-      curVendorFormType = type;
-      ['residence', 'terrain', 'maison'].forEach(t => {
-        document.getElementById('vfTab-' + t).className = t === type
-          ? 'p-3 rounded-2xl bg-emerald-700 text-white text-xs font-extrabold text-left shadow'
-          : 'p-3 rounded-2xl bg-slate-100 text-slate-800 text-xs font-extrabold text-left';
-        const box = document.getElementById('vfFields-' + t);
-        if (t === type) { box.classList.remove('hidden'); box.classList.add('grid'); }
-        else { box.classList.add('hidden'); box.classList.remove('grid'); }
+    function selectStudioRole(role) {
+      curStudioRole = role;
+      ['residence', 'terrain', 'maison'].forEach(r => {
+        document.getElementById('roleCard-' + r).className = r === role
+          ? 'cursor-pointer p-5 rounded-3xl border-2 border-emerald-600 bg-emerald-50/70 space-y-2 transition shadow-md'
+          : 'cursor-pointer p-5 rounded-3xl border-2 border-slate-200 bg-white space-y-2 transition';
+        const spec = document.getElementById('specFields-' + r);
+        if (r === role) { spec.classList.remove('hidden'); spec.classList.add('grid'); }
+        else { spec.classList.add('hidden'); spec.classList.remove('grid'); }
       });
 
-      // Affiche la notice d'abonnement par mois si c'est Terrain ou Maison
-      document.getElementById('vendorMonthlySubNotice').classList.toggle('hidden', type === 'residence');
+      document.getElementById('monthlySubBox').classList.toggle('hidden', role === 'residence');
 
-      const titleInp = document.getElementById('vTitle');
-      const priceInp = document.getElementById('vPrice');
-      if (type === 'residence') {
-        titleInp.placeholder = 'Titre de la Résidence (ex: Appartement 2 Pièces Haut Standing)';
-        priceInp.placeholder = 'Prix PAR NUIT en FCFA (ex: 35000)';
-      } else if (type === 'terrain') {
-        titleInp.placeholder = 'Titre du Terrain (ex: Terrain Plat 600 m² avec ACD)';
-        priceInp.placeholder = 'Prix TOTAL du Terrain en FCFA (ex: 18000000)';
+      const h = document.getElementById('studioFormHeading');
+      const t = document.getElementById('stTitle');
+      const p = document.getElementById('stPrice');
+      if (role === 'residence') {
+        h.textContent = '2. Ajouter une Résidence Meublée (Location par nuit)';
+        t.placeholder = 'Nom de la Résidence (ex: Appartement 2 Pièces Chic)';
+        p.placeholder = 'Prix PAR NUIT en FCFA (ex: 35000)';
+      } else if (role === 'terrain') {
+        h.textContent = '2. Ajouter un Terrain Cadastré (En m² + Lot/Îlot + ACD)';
+        t.placeholder = 'Titre du Terrain (ex: Terrain Plat 600 m² Viabilisé)';
+        p.placeholder = 'Prix TOTAL du Terrain en FCFA (ex: 18000000)';
       } else {
-        titleInp.placeholder = 'Titre de la Maison (ex: Villa Duplex 5 Pièces + Piscine)';
-        priceInp.placeholder = 'Prix de VENTE en FCFA (ex: 65000000)';
+        h.textContent = '2. Ajouter une Maison ou Villa à Vendre (Avec Maquette 3D)';
+        t.placeholder = 'Titre de la Villa (ex: Villa Duplex 5 Pièces + Piscine)';
+        p.placeholder = 'Prix de VENTE en FCFA (ex: 65000000)';
       }
     }
 
-    async function registerHostAgency() {
-      const name = document.getElementById('vendorNameInput').value.trim() || 'Partenaire K-TERRA';
-      lastCreatedVendorName = name;
-      agencies.push({ id: Date.now(), name: name, active: true });
+    async function createVendorStorePage() {
+      const name = document.getElementById('stVendorName').value.trim() || 'Boutique Partenaire K-TERRA';
+      myLastStoreName = name;
+      const roleLabel = curStudioRole === 'residence' ? '🔑 Résidences' : (curStudioRole === 'terrain' ? '🛰️ Terrains (50 000/mois)' : '🏛️ Villas (75 000/mois)');
+      vendors.push({ id: Date.now(), name: name, role: roleLabel, active: true });
       await sb.from('agencies').insert([{ name: name, active: true }]);
-      document.getElementById('myCreatedStoreBox').classList.remove('hidden');
-      alert(`🎉 Page Vendeur "${name}" créée ! Si vous vendez des Terrains ou Maisons, activez votre abonnement mensuel pour que vos annonces restent visibles.`);
+      document.getElementById('createdStoreSuccess').classList.remove('hidden');
+      alert(`🎉 Votre Page Boutique "${name}" est créée ! Vous pouvez maintenant publier vos biens à droite.`);
     }
 
-    function previewMyVendorStore() {
-      currentVendorFilter = lastCreatedVendorName;
-      document.getElementById('vendorStoreTitle').textContent = `🏪 Boutique Officielle : ${lastCreatedVendorName}`;
-      document.getElementById('vendorStoreBanner').classList.remove('hidden');
-      showSection('home');
-      renderProperties();
+    function openMyStorePagePublic() {
+      activeStoreFilter = myLastStoreName;
+      document.getElementById('storeFilterName').textContent = '🏪 Boutique : ' + myLastStoreName;
+      document.getElementById('storeFilterBadge').classList.remove('hidden');
+      document.getElementById('storeFilterBadge').classList.add('flex');
+      switchUniverse(curStudioRole);
     }
 
-    function resetVendorFilter() {
-      currentVendorFilter = '';
-      document.getElementById('vendorStoreBanner').classList.add('hidden');
-      renderProperties();
+    function clearStoreFilter() {
+      activeStoreFilter = '';
+      document.getElementById('storeFilterBadge').classList.add('hidden');
+      renderAllUniverses();
     }
 
-    function handleRealPhotoUpload(e) {
+    function uploadRealPhoto(e) {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
@@ -1151,186 +1104,151 @@
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement('canvas');
-          const scale = Math.min(1, 720 / img.width);
+          const scale = Math.min(1, 700 / img.width);
           canvas.width = img.width * scale;
           canvas.height = img.height * scale;
           canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-          uploadedPhotoDataUrl = canvas.toDataURL('image/jpeg', 0.72);
-          document.getElementById('photoUploadStatus').textContent = '✅ Photo réelle chargée depuis votre téléphone !';
+          uploadedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.72);
+          document.getElementById('stPhotoStatus').textContent = '✅ Vraie photo chargée depuis votre téléphone !';
         };
         img.src = ev.target.result;
       };
       reader.readAsDataURL(file);
     }
 
-    async function addNewProperty() {
-      const com = document.getElementById('vCommune').value;
-      const title = document.getElementById('vTitle').value.trim() || 'Nouveau Bien Certifié K-TERRA';
-      const loc = document.getElementById('vLocation').value.trim() || 'Abidjan, Cocody';
-      const price = parseInt(document.getElementById('vPrice').value, 10) || (curVendorFormType === 'residence' ? 35000 : 25000000);
-      const vendorName = document.getElementById('vendorNameInput').value.trim() || lastCreatedVendorName || 'Partenaire K-TERRA';
+    async function publishVendorListing() {
+      const vendor = document.getElementById('stVendorName').value.trim() || myLastStoreName || 'Partenaire K-TERRA';
+      const com = document.getElementById('stCommune').value;
+      const title = document.getElementById('stTitle').value.trim() || 'Bien Certifié K-TERRA';
+      const loc = document.getElementById('stLocation').value.trim() || 'Abidjan, Cocody';
+      const price = parseInt(document.getElementById('stPrice').value, 10) || (curStudioRole === 'residence' ? 35000 : 20000000);
 
-      let legal = '🛡️ Vérifié K-TERRA', secondBadge = '', details = '', area_m2 = 500, rooms = '';
-      if (curVendorFormType === 'residence') {
-        secondBadge = document.getElementById('vResPower').value;
-        details = document.getElementById('vResDetails').value.trim() || 'Wi-Fi Fibre • Clim • Eau & Courant 24/7';
-      } else if (curVendorFormType === 'terrain') {
-        area_m2 = parseInt(document.getElementById('vTerArea').value, 10) || 600;
-        legal = document.getElementById('vTerDoc').value;
-        const lot = document.getElementById('vTerLot').value.trim() || 'Lot Cadastré';
-        secondBadge = `📐 ${area_m2} m² • 4 Bornes GPS`;
-        details = `Terrain ${area_m2} m² • ${lot} • ${legal} • Publié par ${vendorName}`;
-      } else {
-        rooms = document.getElementById('vMaiRooms').value.trim() || 'Villa Duplex 5 Pièces';
-        area_m2 = parseInt(document.getElementById('vMaiArea').value, 10) || 450;
-        legal = document.getElementById('vMaiDoc').value;
-        secondBadge = `🏠 ${rooms} • ${area_m2} m²`;
-        details = `${rooms} sur ${area_m2} m² • ${legal} • Publié par ${vendorName}`;
-      }
-
-      if (/(\+?\d[\d\s.-]{7,}\d)/g.test(title + ' ' + details + ' ' + loc)) {
-        alert('🛡️ Sécurité K-TERRA : Ne mettez pas de numéro de téléphone dans le texte.');
-        return;
-      }
-
-      const defaultImg = curVendorFormType === 'terrain'
-        ? 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80'
-        : 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=900&q=80';
-
-      const newObj = {
-        id: Date.now(), country: document.getElementById('vCountry').value,
-        domain: curVendorFormType, cat: com, vendor: vendorName,
-        title, location: loc, price_xof: price, legal, secondBadge, details, area_m2, rooms,
-        lat: 5.3984, lng: -3.9872, img: uploadedPhotoDataUrl || defaultImg
+      let itemObj = {
+        id: Date.now(), country: document.getElementById('stCountry').value,
+        universe: curStudioRole, cat: com, vendor: vendor,
+        title, location: loc, price_xof: price,
+        lat: 5.3984, lng: -3.9872,
+        img: uploadedPhotoBase64 || (curStudioRole === 'terrain' ? 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80' : 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=900&q=80')
       };
 
-      items.unshift(newObj);
-      await sb.from('properties').insert([{
-        cat: com, title, location: loc, price_xof: price, legal, details, lat: 5.3984, lng: -3.9872, img: newObj.img
-      }]);
-
-      uploadedPhotoDataUrl = '';
-      setDomain(curVendorFormType);
-      showSection('home');
-      alert(`✅ Votre ${curVendorFormType.toUpperCase()} est maintenant publié !`);
-    }
-
-    // =========================================================================
-    // 5. MODAL D'INSPECTION & GESTION DES 2 MODES DE PAIEMENT
-    // =========================================================================
-    let modalMap = null, modalShape = null;
-    function openPropertyModal(id) {
-      activeItem = items.find(i => i.id === id) || items[0];
-      const dom = activeItem.domain || 'residence';
-
-      document.getElementById('modalLegal').textContent = activeItem.legal;
-      document.getElementById('modalSecondBadge').textContent = activeItem.secondBadge || '';
-      document.getElementById('modalTitle').textContent = activeItem.title;
-      document.getElementById('modalLocation').textContent = '📍 ' + activeItem.location;
-      document.getElementById('modalImg').src = activeItem.img;
-      document.getElementById('modalDetailsText').textContent = activeItem.details;
-
-      ['residence', 'terrain', 'maison'].forEach(d => {
-        document.getElementById('boxAction-' + d).classList.toggle('hidden', d !== dom);
-      });
-
-      if (dom === 'residence') {
-        document.getElementById('resModalPrice').textContent = formatMoney(activeItem.price_xof);
-        updateTotalStay();
-        switchModalView('photo');
-      } else if (dom === 'terrain') {
-        document.getElementById('terModalPrice').textContent = formatMoney(activeItem.price_xof);
-        document.getElementById('terModalArea').textContent = (activeItem.area_m2 || 600) + ' m² Certifiés';
-        document.getElementById('terModalDoc').textContent = activeItem.legal;
-        document.getElementById('terModalVendor').textContent = activeItem.vendor || 'Partenaire Abonné';
-        updateTerrainPlan();
-        switchModalView('satellite');
+      let encodedLegal = '';
+      if (curStudioRole === 'residence') {
+        itemObj.power = document.getElementById('stResPower').value;
+        itemObj.details = document.getElementById('stResEquip').value.trim() || 'Wi-Fi Fibre • Netflix • Clim • Gardien 24h/24';
+        encodedLegal = `V5:residence|${vendor}|${itemObj.power}`;
+      } else if (curStudioRole === 'terrain') {
+        itemObj.area_m2 = parseInt(document.getElementById('stTerArea').value, 10) || 600;
+        itemObj.doc = document.getElementById('stTerDoc').value;
+        itemObj.lot = document.getElementById('stTerLot').value.trim() || 'Lot Cadastré';
+        itemObj.details = `Terrain ${itemObj.area_m2} m² • ${itemObj.lot} • ${itemObj.doc}`;
+        encodedLegal = `V5:terrain|${vendor}|${itemObj.area_m2}|${itemObj.lot}|${itemObj.doc}`;
       } else {
-        document.getElementById('maiModalPrice').textContent = formatMoney(activeItem.price_xof);
-        document.getElementById('maiModalRooms').textContent = activeItem.rooms || 'Villa Duplex 5 Pièces';
-        document.getElementById('maiModalArea').textContent = (activeItem.area_m2 || 450) + ' m²';
-        document.getElementById('maiModalDoc').textContent = activeItem.legal;
-        updateMaisonPlan();
-        switchModalView('3d');
+        itemObj.rooms = document.getElementById('stMaiRooms').value.trim() || 'Villa Duplex 5 Pièces';
+        itemObj.area_m2 = parseInt(document.getElementById('stMaiArea').value, 10) || 450;
+        itemObj.doc = document.getElementById('stMaiDoc').value;
+        itemObj.details = `${itemObj.rooms} sur ${itemObj.area_m2} m² • ${itemObj.doc}`;
+        encodedLegal = `V5:maison|${vendor}|${itemObj.area_m2}|${itemObj.rooms}|${itemObj.doc}`;
       }
 
-      document.getElementById('propertyModal').classList.remove('hidden');
-      document.getElementById('propertyModal').classList.add('flex');
+      catalog.unshift(itemObj);
+      await sb.from('properties').insert([{
+        cat: com, title, location: loc, price_xof: price, legal: encodedLegal, details: itemObj.details, lat: 5.3984, lng: -3.9872, img: itemObj.img
+      }]);
+
+      uploadedPhotoBase64 = '';
+      switchUniverse(curStudioRole);
+      alert(`✅ Publié avec succès dans l'Univers ${curStudioRole.toUpperCase()} !`);
     }
 
-    function updateTotalStay() {
-      const nights = parseInt(document.getElementById('nightsSelect').value, 10) || 1;
-      const discount = nights >= 30 ? 0.75 : (nights >= 7 ? 0.90 : 1);
-      const total = Math.round(activeItem.price_xof * nights * discount);
-      const pct = parseInt(execConfig.commPct, 10) || 15;
-      const adv = Math.round(total * (pct / 100));
-      document.getElementById('commPctLabel').textContent = pct;
-      document.getElementById('totalStayPrice').textContent = formatMoney(total) + ` (${nights} nuit${nights > 1 ? 's' : ''})`;
-      document.getElementById('advanceCommissionPrice').textContent = formatMoney(adv);
-      document.getElementById('balanceHostPrice').textContent = formatMoney(total - adv);
+    // =========================================================================
+    // 5. OUVERTURE DU MODAL SPÉCIFIQUE (RÉSIDENCE vs TERRAIN vs MAISON)
+    // =========================================================================
+    let leafMap = null, leafLayer = null;
+    function openItemModal(id) {
+      selectedItem = catalog.find(x => x.id === id) || catalog[0];
+      const u = selectedItem.universe;
+
+      document.getElementById('mdBadge').textContent = `🏪 Publié par : ${selectedItem.vendor || 'Partenaire K-TERRA'}`;
+      document.getElementById('mdTitle').textContent = selectedItem.title;
+      document.getElementById('mdLocation').textContent = '📍 ' + selectedItem.location;
+      document.getElementById('mdImg').src = selectedItem.img;
+      document.getElementById('mdDesc').textContent = selectedItem.details;
+
+      ['residence', 'terrain', 'maison'].forEach(k => {
+        document.getElementById('panel-' + k).classList.toggle('hidden', k !== u);
+      });
+
+      if (u === 'residence') {
+        document.getElementById('resPriceNight').textContent = fmt(selectedItem.price_xof);
+        calcResStay();
+        setModalTab('photo');
+      } else if (u === 'terrain') {
+        const m2 = selectedItem.area_m2 || 600;
+        document.getElementById('terTotalPrice').textContent = fmt(selectedItem.price_xof);
+        document.getElementById('terArea').textContent = m2 + ' m²';
+        document.getElementById('terPricePerM2').textContent = fmt(Math.round(selectedItem.price_xof / m2)) + ' / m²';
+        document.getElementById('terLotInfo').textContent = selectedItem.lot || 'Lot 142 • Îlot 18';
+        document.getElementById('terDocInfo').textContent = selectedItem.doc || 'ACD Vérifié';
+        setModalTab('sat');
+      } else {
+        document.getElementById('maiTotalPrice').textContent = fmt(selectedItem.price_xof);
+        document.getElementById('maiRoomsInfo').textContent = selectedItem.rooms || 'Villa Duplex 5 Pièces';
+        document.getElementById('maiAreaInfo').textContent = (selectedItem.area_m2 || 450) + ' m²';
+        document.getElementById('maiDocInfo').textContent = selectedItem.doc || 'ACD + Propriété';
+        document.getElementById('maiDeposit30').textContent = fmt(selectedItem.price_xof * 0.3);
+        setModalTab('3d');
+      }
+
+      document.getElementById('detailModal').classList.remove('hidden');
+      document.getElementById('detailModal').classList.add('flex');
     }
 
-    function updateTerrainPlan() {
-      const plan = document.getElementById('terPayPlan').value;
-      const p = activeItem.price_xof || 18000000;
-      document.getElementById('terPlanResult').textContent = plan === 'cash'
-        ? `✅ Signature directe devant Notaire (${formatMoney(p)}).`
-        : `✅ Apport 30% (${formatMoney(p * 0.3)}) + 12 mensualités de ${formatMoney((p * 0.7) / 12)}.`;
+    function closeDetailModal() {
+      document.getElementById('detailModal').classList.add('hidden');
+      document.getElementById('detailModal').classList.remove('flex');
     }
 
-    function updateMaisonPlan() {
-      const plan = document.getElementById('maiPayPlan').value;
-      const p = activeItem.price_xof || 65000000;
-      document.getElementById('maiPlanResult').textContent = plan === 'cash'
-        ? `✅ Remise des clés chez le Notaire (${formatMoney(p)}).`
-        : `✅ Apport 30% (${formatMoney(p * 0.3)}) devant Notaire, solde échelonné.`;
+    function calcResStay() {
+      const n = parseInt(document.getElementById('resNights').value, 10) || 1;
+      const disc = n >= 7 ? 0.9 : 1;
+      const tot = Math.round(selectedItem.price_xof * n * disc);
+      const adv = Math.round(tot * 0.15);
+      document.getElementById('resTotal').textContent = fmt(tot) + ` (${n} nuit${n > 1 ? 's' : ''})`;
+      document.getElementById('resAdvance').textContent = fmt(adv);
+      document.getElementById('resBalance').textContent = fmt(tot - adv);
     }
 
-    function sendFreePropertyVisitRequest(typeLabel) {
-      const inpId = typeLabel === 'TERRAIN' ? 'terClientPhone' : 'maiClientPhone';
-      const phone = document.getElementById(inpId).value.trim();
-      if (!phone) { alert('Veuillez entrer votre numéro WhatsApp pour que le vendeur abonné vous contacte.'); return; }
-      closePropertyModal();
-      alert(`✅ Demande de visite (${typeLabel}) envoyée gratuitement ! Le vendeur certifié (${activeItem.vendor || 'Partenaire K-TERRA'}) vous contactera sur le ${phone}.`);
-    }
-
-    function closePropertyModal() {
-      document.getElementById('propertyModal').classList.add('hidden');
-      document.getElementById('propertyModal').classList.remove('flex');
-    }
-
-    function switchModalView(v) {
-      ['photo', 'satellite', '3d'].forEach(k => {
-        document.getElementById('mView-' + k).classList.toggle('hidden', k !== v);
-        document.getElementById('mBtn-' + k).className = k === v
-          ? 'px-4 py-1.5 rounded-full bg-emerald-700 text-white text-xs font-bold'
+    function setModalTab(tab) {
+      ['photo', 'sat', '3d'].forEach(k => {
+        document.getElementById('mPane-' + k).classList.toggle('hidden', k !== tab);
+        document.getElementById('mTab-' + k).className = k === tab
+          ? 'px-4 py-1.5 rounded-full bg-slate-900 text-white text-xs font-bold'
           : 'px-4 py-1.5 rounded-full bg-slate-100 text-slate-800 text-xs font-bold';
       });
-      if (v === 'satellite') {
+      if (tab === 'sat') {
         setTimeout(() => {
-          const lat = activeItem.lat || 5.3984, lng = activeItem.lng || -3.9872;
-          if (!modalMap) {
-            modalMap = L.map('clientSatMap').setView([lat, lng], 18);
-            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 }).addTo(modalMap);
+          const lat = selectedItem.lat || 5.3984, lng = selectedItem.lng || -3.9872;
+          if (!leafMap) {
+            leafMap = L.map('satMapContainer').setView([lat, lng], 18);
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 }).addTo(leafMap);
           }
-          modalMap.invalidateSize();
-          modalMap.setView([lat, lng], 18);
-          if (modalShape) modalMap.removeLayer(modalShape);
-
-          if (activeItem.domain === 'terrain') {
+          leafMap.invalidateSize();
+          leafMap.setView([lat, lng], 18);
+          if (leafLayer) leafMap.removeLayer(leafLayer);
+          if (selectedItem.universe === 'terrain') {
             const d = 0.00016;
-            modalShape = L.polygon([[lat+d, lng-d], [lat+d, lng+d], [lat-d, lng+d], [lat-d, lng-d]], { color: '#fbbf24', weight: 3, fillColor: '#10b981', fillOpacity: 0.4 }).addTo(modalMap);
-            document.getElementById('satCaptionText').textContent = `🛰️ Cadrage Cadastral 4 Bornes GPS : ${activeItem.area_m2 || 600} m² certifiés.`;
+            leafLayer = L.polygon([[lat+d, lng-d], [lat+d, lng+d], [lat-d, lng+d], [lat-d, lng-d]], { color: '#fbbf24', weight: 3, fillColor: '#10b981', fillOpacity: 0.45 }).addTo(leafMap);
+            document.getElementById('satInfoText').textContent = `🛰️ Tracé des 4 Bornes GPS Cadastrales : ${selectedItem.area_m2 || 600} m² (${selectedItem.lot || 'Lot vérifié'}).`;
           } else {
-            modalShape = L.circle([lat, lng], { color: '#fbbf24', fillColor: '#10b981', fillOpacity: 0.35, radius: 90 }).addTo(modalMap);
-            document.getElementById('satCaptionText').textContent = `🛰️ Vue Satellite du quartier et accès bitumé.`;
+            leafLayer = L.circle([lat, lng], { color: '#e11d48', fillColor: '#e11d48', fillOpacity: 0.35, radius: 90 }).addTo(leafMap);
+            document.getElementById('satInfoText').textContent = `🛰️ Localisation satellite du quartier et vérification de la distance au goudron.`;
           }
         }, 150);
       }
-      if (v === '3d') drawSimple3D();
+      if (tab === '3d') render3DModel();
     }
 
-    const c3d = document.getElementById('simple3DCanvas'), ctx3d = c3d.getContext('2d');
+    const c3d = document.getElementById('canvas3D'), ctx3d = c3d.getContext('2d');
     let rotY = 0.6, roofOn = true, drag3D = false, lastX = 0;
     function proj(x, y, z) {
       const cy = Math.cos(rotY), sy = Math.sin(rotY), x1 = x*cy - z*sy, z1 = z*cy + x*sy, s = 240/(240 + z1 + 50);
@@ -1340,7 +1258,7 @@
       ctx3d.beginPath(); ctx3d.moveTo(pts[0].x, pts[0].y); pts.slice(1).forEach(p => ctx3d.lineTo(p.x, p.y));
       ctx3d.closePath(); ctx3d.fillStyle = fill; ctx3d.fill(); ctx3d.strokeStyle = str; ctx3d.lineWidth = 2; ctx3d.stroke();
     }
-    function drawSimple3D() {
+    function render3DModel() {
       ctx3d.clearRect(0, 0, c3d.width, c3d.height);
       poly([proj(-100,45,-80), proj(100,45,-80), proj(100,45,80), proj(-100,45,80)], 'rgba(16,185,129,0.2)', '#10b981');
       const b = [proj(-60,45,-45), proj(40,45,-45), proj(40,45,45), proj(-60,45,45)];
@@ -1354,173 +1272,188 @@
     }
     c3d.addEventListener('pointerdown', e => { drag3D = true; lastX = e.clientX; });
     window.addEventListener('pointerup', () => drag3D = false);
-    window.addEventListener('pointermove', e => { if (drag3D) { rotY += (e.clientX - lastX)*0.012; lastX = e.clientX; drawSimple3D(); } });
-    function toggleSimpleRoof() { roofOn = !roofOn; drawSimple3D(); }
+    window.addEventListener('pointermove', e => { if (drag3D) { rotY += (e.clientX - lastX)*0.012; lastX = e.clientX; render3DModel(); } });
+    function toggleRoof3D() { roofOn = !roofOn; render3DModel(); }
+
+    function bookFreeVisit(typeLabel) {
+      const inp = typeLabel === 'TERRAIN' ? document.getElementById('terBuyerPhone') : document.getElementById('maiBuyerPhone');
+      if (!inp.value.trim()) { alert('Entrez votre numéro WhatsApp pour planifier la visite.'); return; }
+      closeDetailModal();
+      alert(`✅ Visite ${typeLabel} enregistrée gratuitement ! Le vendeur abonné (${selectedItem.vendor}) vous contactera sur le ${inp.value}.`);
+    }
 
     // =========================================================================
-    // 6. PAIEMENT : AVANCE 15% (RÉSIDENCES) OU ABONNEMENT MENSUEL (TERRAINS/MAISONS)
+    // 6. PAIEMENTS : AVANCE 15% (RÉSIDENCE) vs ABONNEMENT MENSUEL (VENDEUR)
     // =========================================================================
-    let pendingAmountXof = 0;
-
-    function openBookingPayModal(mode) {
-      currentPaymentMode = 'residence';
-      const nights = parseInt(document.getElementById('nightsSelect').value, 10) || 1;
-      const pct = parseInt(execConfig.commPct, 10) || 15;
-      pendingAmountXof = Math.round(activeItem.price_xof * nights * (pct / 100));
-      document.getElementById('payModalSummaryTitle').textContent = `🔑 Réservation Résidence : ${activeItem.title}`;
-      document.getElementById('payModalAdvanceAmount').textContent = `Avance (${pct}%) + Garantie Pass Échange Gratuit : ${formatMoney(pendingAmountXof)}`;
-      fillPayNumbers();
+    function openPaymentWindow(mode) {
+      pendingPaymentMode = mode;
+      const n = parseInt(document.getElementById('resNights').value, 10) || 1;
+      pendingPaymentAmount = Math.round(selectedItem.price_xof * n * 0.15);
+      document.getElementById('payTitle').textContent = `🔑 Avance 15% + Garantie Pass Échange : ${selectedItem.title}`;
+      document.getElementById('payAmount').textContent = `Montant à envoyer : ${fmt(pendingPaymentAmount)}`;
+      renderPayAccounts();
       document.getElementById('payModal').classList.remove('hidden');
       document.getElementById('payModal').classList.add('flex');
     }
 
-    function openVendorSubscriptionModal() {
-      currentPaymentMode = 'vendor_sub';
-      pendingAmountXof = parseInt(execConfig.monthlySub, 10) || 50000;
-      const vName = document.getElementById('vendorNameInput').value.trim() || lastCreatedVendorName || 'Ma Page Vendeur';
-      document.getElementById('payModalSummaryTitle').textContent = `🏪 Abonnement Mensuel Visibilité Terrains & Villas (${vName})`;
-      document.getElementById('payModalAdvanceAmount').textContent = `Forfait 30 jours d'affichage illimité : ${formatMoney(pendingAmountXof)} / mois`;
-      fillPayNumbers();
+    function openMonthlySubPayment() {
+      pendingPaymentMode = 'sub';
+      pendingPaymentAmount = curStudioRole === 'terrain' ? 50000 : 75000;
+      const vName = document.getElementById('stVendorName').value.trim() || 'Ma Boutique';
+      document.getElementById('payTitle').textContent = `🏪 Abonnement Mensuel (${vName})`;
+      document.getElementById('payAmount').textContent = `Forfait Visibilité 30 Jours : ${fmt(pendingPaymentAmount)}`;
+      renderPayAccounts();
       document.getElementById('payModal').classList.remove('hidden');
       document.getElementById('payModal').classList.add('flex');
     }
 
-    function fillPayNumbers() {
-      document.getElementById('payNumbersDisplay').innerHTML = `
-        <p>🌊 <strong>Wave :</strong> ${execConfig.wave}</p>
-        <p>🍊 <strong>Orange Money :</strong> ${execConfig.om}</p>
-        <p>💛 <strong>MTN MoMo :</strong> ${execConfig.mtn}</p>
-        <p>💳 <strong>Carte / BNI :</strong> ${execConfig.bni}</p>
+    function renderPayAccounts() {
+      document.getElementById('payAccountsBox').innerHTML = `
+        <p>🌊 Wave : ${morataCfg.wave}</p>
+        <p>🍊 Orange Money : ${morataCfg.om}</p>
+        <p>💛 MTN MoMo : ${morataCfg.mtn}</p>
+        <p>💳 BNI / Carte : ${morataCfg.bni}</p>
       `;
     }
 
-    function closePayModal() {
+    function closePayWindow() {
       document.getElementById('payModal').classList.add('hidden');
       document.getElementById('payModal').classList.remove('flex');
     }
 
-    function validatePayment() {
-      const ref = document.getElementById('txInput').value.trim();
-      if (!ref) { alert('Entrez la référence de votre paiement Wave / Orange Money / MTN.'); return; }
+    function confirmPayment() {
+      const ref = document.getElementById('payRefInput').value.trim();
+      if (!ref) { alert('Entrez la référence de paiement Wave / OM / MTN.'); return; }
 
-      if (currentPaymentMode === 'vendor_sub') {
-        const vName = document.getElementById('vendorNameInput').value.trim() || lastCreatedVendorName || 'Vendeur Abonné';
-        bookingsLedger.unshift({
-          id: Date.now(),
-          title: `[ABONNEMENT MOIS TERRAINS/VILLAS] ${vName}`,
-          client: vName,
-          commission: pendingAmountXof,
-          ref: ref,
-          pass: 'MOIS-ACTIF 🟢'
-        });
-        localStorage.setItem('kterra_bookings_v3', JSON.stringify(bookingsLedger));
-        document.getElementById('txInput').value = '';
-        closePayModal();
-        alert(`✅ Abonnement mensuel validé ! Vos terrains et villas sont visibles pour 30 jours.`);
+      if (pendingPaymentMode === 'sub') {
+        const vName = document.getElementById('stVendorName').value.trim() || 'Partenaire Abonné';
+        ledger.unshift({ id: Date.now(), type: '🏪 Abonnement Mois Vendeur', client: vName, amount: pendingPaymentAmount, ref, pass: 'MOIS PAYÉ 🟢' });
+        localStorage.setItem('kterra_v5_ledger', JSON.stringify(ledger));
+        closePayWindow();
+        alert('✅ Abonnement mensuel activé ! Vos terrains et villas sont visibles pendant 30 jours.');
         return;
       }
 
-      const clientPhone = document.getElementById('resClientPhone').value.trim() || 'Client K-TERRA';
-      const passCode = 'PASS-KT-' + Math.floor(1000 + Math.random() * 9000);
-      bookingsLedger.unshift({
-        id: Date.now(),
-        title: `[Avance 15% Résidence] ${activeItem.title}`,
-        client: clientPhone,
-        commission: pendingAmountXof,
-        ref: ref,
-        pass: passCode
-      });
-      localStorage.setItem('kterra_bookings_v3', JSON.stringify(bookingsLedger));
-      document.getElementById('txInput').value = '';
-      closePayModal();
-      closePropertyModal();
-      alert(`✅ Réservation validée ! Votre Code Pass (avec Garantie Échange Gratuit sous 30 min) est : ${passCode}`);
+      const phone = document.getElementById('resPhone').value.trim() || 'Client Résidence';
+      const code = 'PASS-KT-' + Math.floor(1000 + Math.random() * 9000);
+      ledger.unshift({ id: Date.now(), type: `🔑 Avance 15% (${selectedItem.title})`, client: phone, amount: pendingPaymentAmount, ref, pass: code + ' (Actif)' });
+      localStorage.setItem('kterra_v5_ledger', JSON.stringify(ledger));
+      closePayWindow();
+      closeDetailModal();
+      alert(`✅ Réservation validée ! Votre Pass Officiel (avec Garantie Échange Gratuit 30 min) est : ${code}`);
+    }
+
+    function shareAppWhatsApp() {
+      const url = window.location.href.split('?')[0];
+      window.open(`https://wa.me/?text=${encodeURIComponent('🏠🛰️ Découvrez K-TERRA V5 (Résidences par Commune, Terrains Cadastrés en m² & Villas 3D) : ' + url)}`, '_blank');
     }
 
     // =========================================================================
-    // 7. PARTAGE WHATSAPP & TABLEAU DE BORD SECRET DE MORATA
+    // 7. POSTE SECRET DE MORATA (INVISIBLE DU PUBLIC — CODE MORATA2026)
     // =========================================================================
-    function getAppUrl() { return window.location.href.split('?')[0].split('#')[0]; }
-    function shareAppOnWhatsApp() {
-      const txt = `🏠🛰️ Découvrez *K-TERRA* : Résidences Meublées par Commune, Terrains avec 4 Bornes GPS et Villas en 3D : ${getAppUrl()}`;
-      window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank');
+    let tapCnt = 0, tapTmr = null;
+    function secretLogoTap() {
+      tapCnt++;
+      clearTimeout(tapTmr);
+      if (tapCnt >= 5) {
+        tapCnt = 0;
+        const p = prompt('👑 Code Secret Propriétaire :');
+        if (p && p.trim().toUpperCase().includes('MORATA')) openMorataERP();
+      } else tapTmr = setTimeout(() => { tapCnt = 0; }, 1800);
     }
-    function shareCurrentPropertyWhatsApp() {
-      const txt = `✨ Sur *K-TERRA* : *${activeItem.title}* (${activeItem.location}) à *${formatMoney(activeItem.price_xof)}* ! Voir ici : ${getAppUrl()}`;
-      window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank');
+
+    function checkSecretOrFilter() {
+      const v = document.getElementById('globalSearchInput').value.trim().toUpperCase();
+      if (v === 'MORATA2026' || v === 'MORATA') {
+        document.getElementById('globalSearchInput').value = '';
+        openMorataERP();
+        return;
+      }
+      renderAllUniverses();
     }
-    function copyAppLink() { navigator.clipboard.writeText(getAppUrl()); alert('✅ Lien officiel copié !'); }
-    function openInstallModal() {
-      document.getElementById('publicQrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(getAppUrl())}`;
-      document.getElementById('installModal').classList.remove('hidden');
-      document.getElementById('installModal').classList.add('flex');
+
+    function openMorataERP() {
+      document.getElementById('publicApp').classList.add('hidden');
+      document.getElementById('morataSecretERP').classList.remove('hidden');
+      renderERP();
     }
-    function closeInstallModal() { document.getElementById('installModal').classList.add('hidden'); document.getElementById('installModal').classList.remove('flex'); }
 
-    function updateExecutiveDashboardUI() {
-      const url = getAppUrl();
-      document.getElementById('appUrlCopyInput').value = url;
-      document.getElementById('ownerQrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
-      document.getElementById('cfgWave').value = execConfig.wave;
-      document.getElementById('cfgOm').value = execConfig.om;
-      document.getElementById('cfgMtn').value = execConfig.mtn;
-      document.getElementById('cfgBni').value = execConfig.bni;
-      document.getElementById('cfgCommissionPct').value = execConfig.commPct || 15;
-      document.getElementById('cfgMonthlySub').value = execConfig.monthlySub || 50000;
+    function closeMorataSecretERP() {
+      document.getElementById('morataSecretERP').classList.add('hidden');
+      document.getElementById('publicApp').classList.remove('hidden');
+      renderAllUniverses();
+    }
 
-      const totalComm = bookingsLedger.reduce((sum, b) => sum + (b.commission || 0), 0);
-      document.getElementById('kpiTotalRevenue').textContent = totalComm.toLocaleString('fr-FR') + ' FCFA';
-      document.getElementById('kpiBookingsCount').textContent = bookingsLedger.length + ' Paiements';
-      document.getElementById('kpiPropertiesCount').textContent = items.filter(i => isVendorActive(i.vendor)).length + ' Biens visibles';
-      document.getElementById('kpiAgenciesCount').textContent = agencies.length + ' Vendeurs';
+    function renderERP() {
+      document.getElementById('erpWave').value = morataCfg.wave;
+      document.getElementById('erpOm').value = morataCfg.om;
+      document.getElementById('erpMtn').value = morataCfg.mtn;
+      document.getElementById('erpBni').value = morataCfg.bni;
 
-      document.getElementById('executiveBookingsTable').innerHTML = bookingsLedger.map(b => `
-        <tr>
-          <td class="py-2.5 px-3 font-bold text-white">${b.title}</td>
-          <td class="py-2.5 px-3 text-slate-300">${b.client}</td>
-          <td class="py-2.5 px-3 font-extrabold text-emerald-400">+${(b.commission || 0).toLocaleString('fr-FR')} FCFA</td>
-          <td class="py-2.5 px-3 font-mono text-amber-300">${b.ref}</td>
-          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">${b.pass || 'VALIDÉ'}</span></td>
-        </tr>
-      `).join('');
+      const tot = ledger.reduce((s, x) => s + (x.amount || 0), 0);
+      document.getElementById('erpTotalCash').textContent = tot.toLocaleString('fr-FR') + ' FCFA';
+      document.getElementById('erpResCount').textContent = ledger.filter(x => x.type.includes('15%')).length + ' Avances reçues';
+      document.getElementById('erpSubCount').textContent = ledger.filter(x => x.type.includes('Abonnement')).length + ' Mois payés';
+      document.getElementById('erpVendorsCount').textContent = vendors.filter(v => v.active).length + ' / ' + vendors.length + ' Actifs';
 
-      document.getElementById('executiveAgenciesList').innerHTML = agencies.map(a => `
-        <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-2">
+      document.getElementById('erpVendorsGrid').innerHTML = vendors.map(v => `
+        <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-2">
           <div>
-            <span class="text-xs font-bold text-white block">${a.name}</span>
-            <span class="text-[10px] ${a.active ? 'text-emerald-400' : 'text-red-400'}">${a.active ? 'Biens visibles sur le site' : 'Biens cachés (Mois non payé)'}</span>
+            <p class="font-extrabold text-xs text-white">${v.name}</p>
+            <p class="text-[11px] text-slate-400">${v.role}</p>
           </div>
-          <button onclick="toggleAgencyAI(${a.id}, ${a.active})" class="px-3 py-1.5 rounded-xl font-extrabold text-xs shrink-0 ${a.active ? 'bg-emerald-500 text-black' : 'bg-red-600 text-white'}">
-            ${a.active ? 'ACTIF 🟢' : 'BLOQUÉ 🔴'}
+          <button onclick="toggleVendorVisibility(${v.id})" class="px-3 py-1.5 rounded-xl font-extrabold text-xs ${v.active ? 'bg-emerald-500 text-black' : 'bg-rose-600 text-white'}">
+            ${v.active ? 'MOIS PAYÉ 🟢' : 'COUPÉ 🔴'}
           </button>
         </div>
       `).join('');
+
+      document.getElementById('erpLedgerTable').innerHTML = ledger.map(l => `
+        <tr>
+          <td class="py-2.5 px-3 font-bold">${l.type}</td>
+          <td class="py-2.5 px-3 text-slate-300">${l.client}</td>
+          <td class="py-2.5 px-3 font-extrabold text-emerald-400">+${l.amount.toLocaleString('fr-FR')} FCFA</td>
+          <td class="py-2.5 px-3 font-mono text-amber-300">${l.ref}</td>
+          <td class="py-2.5 px-3">
+            <span class="px-2 py-0.5 rounded bg-slate-800 text-emerald-300 font-bold mr-2">${l.pass}</span>
+            ${l.type.includes('15%') ? `<button onclick="triggerPassExchange(${l.id})" class="px-2 py-1 rounded bg-amber-400 text-black font-extrabold text-[10px]">🔄 Reloger (Pass Échange)</button>` : ''}
+          </td>
+        </tr>
+      `).join('');
     }
 
-    async function saveExecutiveConfig() {
-      execConfig.wave = document.getElementById('cfgWave').value.trim() || execConfig.wave;
-      execConfig.om = document.getElementById('cfgOm').value.trim() || execConfig.om;
-      execConfig.mtn = document.getElementById('cfgMtn').value.trim() || execConfig.mtn;
-      execConfig.bni = document.getElementById('cfgBni').value.trim() || execConfig.bni;
-      execConfig.commPct = parseInt(document.getElementById('cfgCommissionPct').value, 10) || 15;
-      execConfig.monthlySub = parseInt(document.getElementById('cfgMonthlySub').value, 10) || 50000;
-      localStorage.setItem('kterra_exec_cfg', JSON.stringify(execConfig));
-      await sb.from('owner_settings').upsert({ id: 1, payment_numbers: JSON.stringify(execConfig) });
-      updateExecutiveDashboardUI();
-      alert('✅ Vos numéros et vos tarifs (Avance 15% + Abonnement Mensuel) sont enregistrés !');
+    function toggleVendorVisibility(id) {
+      const v = vendors.find(x => x.id === id);
+      if (v) v.active = !v.active;
+      renderERP();
     }
 
-    async function toggleAgencyAI(id, currentStatus) {
-      const ag = agencies.find(x => x.id === id);
-      if (ag) ag.active = !currentStatus;
-      await sb.from('agencies').update({ active: !currentStatus }).eq('id', id);
-      updateExecutiveDashboardUI();
-      renderProperties();
+    function triggerPassExchange(id) {
+      const item = ledger.find(x => x.id === id);
+      if (item) {
+        item.pass = '🔄 RELOGÉ (Pass Échange Utilisé — 15% Conservés)';
+        localStorage.setItem('kterra_v5_ledger', JSON.stringify(ledger));
+        renderERP();
+        alert('✅ Pass Échange activé ! Le client peut entrer dans une autre résidence K-TERRA sans repayer, et vous conservez vos 15% !');
+      }
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      loadFromSupabase();
-    });
+    async function saveMorataNumbers() {
+      morataCfg.wave = document.getElementById('erpWave').value.trim();
+      morataCfg.om = document.getElementById('erpOm').value.trim();
+      morataCfg.mtn = document.getElementById('erpMtn').value.trim();
+      morataCfg.bni = document.getElementById('erpBni').value.trim();
+      localStorage.setItem('kterra_v5_cfg', JSON.stringify(morataCfg));
+      await sb.from('owner_settings').upsert({ id: 1, payment_numbers: JSON.stringify(morataCfg) });
+      alert('✅ Vos numéros Wave, Orange Money, MTN et BNI sont enregistrés !');
+    }
+
+    async function cleanOldSupabaseData() {
+      await sb.from('properties').delete().neq('id', 0);
+      catalog = [...initialCatalog];
+      renderERP();
+      alert('🧹 Anciennes annonces test purgées de Supabase ! Seul votre nouveau catalogue propre V5 est affiché.');
+    }
   </script>
 </body>
 </html>
